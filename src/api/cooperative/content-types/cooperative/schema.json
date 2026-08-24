@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cooperatives",
+  "info": {
+    "singularName": "cooperative",
+    "pluralName": "cooperatives",
+    "displayName": "Cooperative"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "text"
+    },
+    "contact_number": {
+      "type": "string"
+    },
+    "contact_person": {
+      "type": "string"
+    },
+    "cooperative_status": {
+      "type": "enumeration",
+      "required": true,
+      "default": "active",
+      "enum": [
+        "active",
+        "inactive"
+      ]
+    },
+    "vehicles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::vehicle.vehicle",
+      "mappedBy": "cooperative"
+    },
+    "drivers": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::driver.driver",
+      "mappedBy": "cooperative"
+    }
+  }
+}

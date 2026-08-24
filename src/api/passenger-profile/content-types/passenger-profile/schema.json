@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "passenger_profiles",
+  "info": {
+    "singularName": "passenger-profile",
+    "pluralName": "passenger-profiles",
+    "displayName": "Passenger Profile"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string",
+      "required": true
+    },
+    "contact_number": {
+      "type": "string"
+    },
+    "preferred_language": {
+      "type": "enumeration",
+      "enum": [
+        "english",
+        "filipino"
+      ]
+    },
+    "accessibility_preferences": {
+      "type": "json"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "passenger_profile"
+    },
+    "passenger_reports": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::passenger-report.passenger-report",
+      "mappedBy": "passenger"
+    }
+  }
+}

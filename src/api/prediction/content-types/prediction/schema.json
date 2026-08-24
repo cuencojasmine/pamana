@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "predictions",
+  "info": {
+    "singularName": "prediction",
+    "pluralName": "predictions",
+    "displayName": "Prediction"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "prediction_type": {
+      "type": "enumeration",
+      "enum": [
+        "wait_time",
+        "demand"
+      ]
+    },
+    "predicted_value": {
+      "type": "decimal"
+    },
+    "confidence": {
+      "type": "decimal"
+    },
+    "prediction_time": {
+      "type": "datetime"
+    },
+    "target_time": {
+      "type": "datetime"
+    },
+    "model_version": {
+      "type": "string"
+    },
+    "route": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route.route",
+      "inversedBy": "predictions"
+    },
+    "stop": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route-stop.route-stop",
+      "inversedBy": "predictions"
+    }
+  }
+}
