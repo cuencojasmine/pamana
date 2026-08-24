@@ -1,0 +1,84 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vehicles",
+  "info": {
+    "singularName": "vehicle",
+    "pluralName": "vehicles",
+    "displayName": "Vehicle"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "vehicle_number": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "plate_number": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "vehicle_type": {
+      "type": "string",
+      "required": true
+    },
+    "capacity": {
+      "type": "integer",
+      "min": 1
+    },
+    "current_occupancy": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "vehicle_status": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "available",
+        "in_transit",
+        "full",
+        "offline"
+      ]
+    },
+    "route": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route.route",
+      "inversedBy": "vehicles"
+    },
+    "cooperative": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::cooperative.cooperative",
+      "inversedBy": "vehicles"
+    },
+    "driver": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::driver.driver",
+      "mappedBy": "vehicle"
+    },
+    "trips": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::trip.trip",
+      "mappedBy": "vehicle"
+    },
+    "vehicle_locations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::vehicle-location.vehicle-location",
+      "mappedBy": "vehicle"
+    },
+    "passenger_reports": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::passenger-report.passenger-report",
+      "mappedBy": "vehicle"
+    }
+  }
+}

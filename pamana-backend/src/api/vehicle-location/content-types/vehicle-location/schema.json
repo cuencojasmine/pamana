@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vehicle_locations",
+  "info": {
+    "singularName": "vehicle-location",
+    "pluralName": "vehicle-locations",
+    "displayName": "Vehicle Location"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "latitude": {
+      "type": "decimal",
+      "required": true
+    },
+    "longitude": {
+      "type": "decimal",
+      "required": true
+    },
+    "speed": {
+      "type": "decimal"
+    },
+    "heading": {
+      "type": "decimal"
+    },
+    "recorded_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "vehicle": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::vehicle.vehicle",
+      "required": true,
+      "inversedBy": "vehicle_locations"
+    },
+    "trip": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::trip.trip",
+      "required": true,
+      "inversedBy": "vehicle_locations"
+    }
+  }
+}

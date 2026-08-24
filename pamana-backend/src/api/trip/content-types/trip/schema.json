@@ -1,0 +1,66 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trips",
+  "info": {
+    "singularName": "trip",
+    "pluralName": "trips",
+    "displayName": "Trip"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "started_at": {
+      "type": "datetime"
+    },
+    "ended_at": {
+      "type": "datetime"
+    },
+    "direction": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "outbound",
+        "inbound"
+      ]
+    },
+    "trip_status": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "scheduled",
+        "active",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "vehicle": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::vehicle.vehicle",
+      "required": true,
+      "inversedBy": "trips"
+    },
+    "driver": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::driver.driver",
+      "required": true,
+      "inversedBy": "trips"
+    },
+    "route": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route.route",
+      "required": true,
+      "inversedBy": "trips"
+    },
+    "vehicle_locations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::vehicle-location.vehicle-location",
+      "mappedBy": "trip"
+    }
+  }
+}

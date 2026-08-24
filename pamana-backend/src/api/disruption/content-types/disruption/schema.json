@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "disruptions",
+  "info": {
+    "singularName": "disruption",
+    "pluralName": "disruptions",
+    "displayName": "Disruption"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "flood",
+        "road_closure",
+        "accident",
+        "weather",
+        "route_suspension"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "latitude": {
+      "type": "decimal"
+    },
+    "longitude": {
+      "type": "decimal"
+    },
+    "severity": {
+      "type": "enumeration",
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ]
+    },
+    "starts_at": {
+      "type": "datetime"
+    },
+    "ends_at": {
+      "type": "datetime"
+    },
+    "disruption_status": {
+      "type": "enumeration",
+      "enum": [
+        "active",
+        "resolved",
+        "inactive"
+      ]
+    },
+    "source": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "kind": "collectionType",
+  "collectionName": "routes",
+  "info": {
+    "singularName": "route",
+    "pluralName": "routes",
+    "displayName": "Route"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "route_name": {
+      "type": "string",
+      "required": true
+    },
+    "route_code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "origin": {
+      "type": "string",
+      "required": true
+    },
+    "destination": {
+      "type": "string",
+      "required": true
+    },
+    "base_fare": {
+      "type": "decimal",
+      "required": false,
+      "min": 0
+    },
+    "estimated_travel_time": {
+      "type": "integer",
+      "min": 0
+    },
+    "route_status": {
+      "type": "enumeration",
+      "required": true,
+      "default": "active",
+      "enum": [
+        "active",
+        "inactive"
+      ]
+    },
+    "route_stops": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::route-stop.route-stop",
+      "mappedBy": "route"
+    },
+    "vehicles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::vehicle.vehicle",
+      "mappedBy": "route"
+    },
+    "trips": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::trip.trip",
+      "mappedBy": "route"
+    },
+    "passenger_reports": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::passenger-report.passenger-report",
+      "mappedBy": "route"
+    },
+    "passenger_demand_observations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::passenger-demand-observation.passenger-demand-observation",
+      "mappedBy": "route"
+    },
+    "predictions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::prediction.prediction",
+      "mappedBy": "route"
+    }
+  }
+}

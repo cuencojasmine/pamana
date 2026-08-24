@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "drivers",
+  "info": {
+    "singularName": "driver",
+    "pluralName": "drivers",
+    "displayName": "Driver"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "driver_number": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string",
+      "required": true
+    },
+    "contact_number": {
+      "type": "string"
+    },
+    "license_number": {
+      "type": "string",
+      "unique": true
+    },
+    "driver_status": {
+      "type": "enumeration",
+      "required": true,
+      "default": "active",
+      "enum": [
+        "active",
+        "inactive"
+      ]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "driver"
+    },
+    "cooperative": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::cooperative.cooperative",
+      "inversedBy": "drivers"
+    },
+    "vehicle": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::vehicle.vehicle",
+      "inversedBy": "driver"
+    },
+    "trips": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::trip.trip",
+      "mappedBy": "driver"
+    }
+  }
+}

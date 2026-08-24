@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "passenger_reports",
+  "info": {
+    "singularName": "passenger-report",
+    "pluralName": "passenger-reports",
+    "displayName": "Passenger Report"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "report_type": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "vehicle_arrived",
+        "vehicle_full",
+        "seats_available",
+        "route_unavailable"
+      ]
+    },
+    "latitude": {
+      "type": "decimal"
+    },
+    "longitude": {
+      "type": "decimal"
+    },
+    "reported_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "passenger": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::passenger-profile.passenger-profile",
+      "inversedBy": "passenger_reports"
+    },
+    "route": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route.route",
+      "inversedBy": "passenger_reports"
+    },
+    "stop": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route-stop.route-stop",
+      "inversedBy": "passenger_reports"
+    },
+    "vehicle": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::vehicle.vehicle",
+      "inversedBy": "passenger_reports"
+    }
+  }
+}

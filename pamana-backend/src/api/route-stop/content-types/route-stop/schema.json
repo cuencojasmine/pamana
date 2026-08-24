@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "route_stops",
+  "info": {
+    "singularName": "route-stop",
+    "pluralName": "route-stops",
+    "displayName": "Route Stop"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "sequence": {
+      "type": "integer",
+      "required": true,
+      "min": 1
+    },
+    "latitude": {
+      "type": "decimal",
+      "required": true
+    },
+    "longitude": {
+      "type": "decimal",
+      "required": true
+    },
+    "stop_type": {
+      "type": "enumeration",
+      "enum": [
+        "pickup",
+        "dropoff",
+        "both",
+        "terminal"
+      ]
+    },
+    "route": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route.route",
+      "inversedBy": "route_stops"
+    },
+    "passenger_reports": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::passenger-report.passenger-report",
+      "mappedBy": "stop"
+    },
+    "passenger_demand_observations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::passenger-demand-observation.passenger-demand-observation",
+      "mappedBy": "stop"
+    },
+    "predictions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::prediction.prediction",
+      "mappedBy": "stop"
+    }
+  }
+}

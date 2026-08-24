@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "passenger_demand_observations",
+  "info": {
+    "singularName": "passenger-demand-observation",
+    "pluralName": "passenger-demand-observations",
+    "displayName": "Passenger Demand Observation"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "time_slot": {
+      "type": "string",
+      "required": true
+    },
+    "waiting_passengers": {
+      "type": "integer",
+      "min": 0
+    },
+    "source": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "observed",
+        "crowdsourced",
+        "simulation"
+      ]
+    },
+    "route": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route.route",
+      "inversedBy": "passenger_demand_observations"
+    },
+    "stop": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::route-stop.route-stop",
+      "inversedBy": "passenger_demand_observations"
+    }
+  }
+}
