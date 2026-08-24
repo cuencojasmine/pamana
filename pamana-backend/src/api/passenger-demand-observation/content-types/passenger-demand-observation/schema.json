@@ -21,6 +21,7 @@
     },
     "waiting_passengers": {
       "type": "integer",
+      "required": true,
       "min": 0
     },
     "source": {
@@ -36,12 +37,14 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route.route",
+      "required": true,
       "inversedBy": "passenger_demand_observations"
     },
     "stop": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route-stop.route-stop",
+      "required": true,
       "inversedBy": "passenger_demand_observations"
     }
   }

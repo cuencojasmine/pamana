@@ -496,7 +496,9 @@ export interface ApiDisruptionDisruption extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text;
     disruption_status: Schema.Attribute.Enumeration<
       ['active', 'resolved', 'inactive']
-    >;
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'active'>;
     ends_at: Schema.Attribute.DateTime;
     latitude: Schema.Attribute.Decimal;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -509,13 +511,15 @@ export interface ApiDisruptionDisruption extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     severity: Schema.Attribute.Enumeration<
       ['low', 'moderate', 'high', 'critical']
-    >;
-    source: Schema.Attribute.String;
-    starts_at: Schema.Attribute.DateTime;
-    title: Schema.Attribute.String;
+    > &
+      Schema.Attribute.Required;
+    source: Schema.Attribute.String & Schema.Attribute.Required;
+    starts_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     type: Schema.Attribute.Enumeration<
       ['flood', 'road_closure', 'accident', 'weather', 'route_suspension']
-    >;
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -592,17 +596,20 @@ export interface ApiPassengerDemandObservationPassengerDemandObservation
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'>;
+    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'> &
+      Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<
       ['observed', 'crowdsourced', 'simulation']
     > &
       Schema.Attribute.Required;
-    stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'>;
+    stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'> &
+      Schema.Attribute.Required;
     time_slot: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     waiting_passengers: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
           min: 0;
@@ -691,8 +698,10 @@ export interface ApiPassengerReportPassengerReport
     > &
       Schema.Attribute.Required;
     reported_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'>;
-    stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'>;
+    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'> &
+      Schema.Attribute.Required;
+    stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'> &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -711,7 +720,14 @@ export interface ApiPredictionPrediction extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    confidence: Schema.Attribute.Decimal;
+    confidence: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1;
+          min: 0;
+        },
+        number
+      >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -721,14 +737,16 @@ export interface ApiPredictionPrediction extends Struct.CollectionTypeSchema {
       'api::prediction.prediction'
     > &
       Schema.Attribute.Private;
-    model_version: Schema.Attribute.String;
-    predicted_value: Schema.Attribute.Decimal;
-    prediction_time: Schema.Attribute.DateTime;
-    prediction_type: Schema.Attribute.Enumeration<['wait_time', 'demand']>;
+    model_version: Schema.Attribute.String & Schema.Attribute.Required;
+    predicted_value: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    prediction_time: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    prediction_type: Schema.Attribute.Enumeration<['wait_time', 'demand']> &
+      Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'>;
+    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'> &
+      Schema.Attribute.Required;
     stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'>;
-    target_time: Schema.Attribute.DateTime;
+    target_time: Schema.Attribute.DateTime & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

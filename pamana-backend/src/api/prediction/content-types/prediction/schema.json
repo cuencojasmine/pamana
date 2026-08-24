@@ -13,30 +13,38 @@
   "attributes": {
     "prediction_type": {
       "type": "enumeration",
+      "required": true,
       "enum": [
         "wait_time",
         "demand"
       ]
     },
     "predicted_value": {
-      "type": "decimal"
+      "type": "decimal",
+      "required": true
     },
     "confidence": {
-      "type": "decimal"
+      "type": "decimal",
+      "min": 0,
+      "max": 1
     },
     "prediction_time": {
-      "type": "datetime"
+      "type": "datetime",
+      "required": true
     },
     "target_time": {
-      "type": "datetime"
+      "type": "datetime",
+      "required": true
     },
     "model_version": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "route": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route.route",
+      "required": true,
       "inversedBy": "predictions"
     },
     "stop": {

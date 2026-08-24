@@ -41,12 +41,14 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route.route",
+      "required": true,
       "inversedBy": "passenger_reports"
     },
     "stop": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route-stop.route-stop",
+      "required": true,
       "inversedBy": "passenger_reports"
     },
     "vehicle": {

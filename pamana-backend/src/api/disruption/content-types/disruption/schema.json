@@ -13,6 +13,7 @@
   "attributes": {
     "type": {
       "type": "enumeration",
+      "required": true,
       "enum": [
         "flood",
         "road_closure",
@@ -22,7 +23,8 @@
       ]
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "description": {
       "type": "text"
@@ -35,6 +37,7 @@
     },
     "severity": {
       "type": "enumeration",
+      "required": true,
       "enum": [
         "low",
         "moderate",
@@ -43,13 +46,16 @@
       ]
     },
     "starts_at": {
-      "type": "datetime"
+      "type": "datetime",
+      "required": true
     },
     "ends_at": {
       "type": "datetime"
     },
     "disruption_status": {
       "type": "enumeration",
+      "required": true,
+      "default": "active",
       "enum": [
         "active",
         "resolved",
@@ -57,7 +63,8 @@
       ]
     },
     "source": {
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   }
 }
