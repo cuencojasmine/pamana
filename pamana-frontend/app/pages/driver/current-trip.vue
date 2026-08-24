@@ -1,0 +1,22 @@
+<script setup lang="ts">
+//@ts-nocheck
+definePageMeta({
+  middleware: [
+    'auth',
+    'driver'
+  ]
+})
+</script>
+
+<template>
+  <div>
+    <h1 class="text-2xl font-bold">
+      Current Trip
+    </h1>
+
+    <p class="mt-2 text-gray-500">
+      Driver trip and GPS controls will be developed
+      in Hackathon Priority 6.
+    </p>
+  </div>
+</template>
