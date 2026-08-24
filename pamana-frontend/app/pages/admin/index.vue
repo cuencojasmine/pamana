@@ -8,29 +8,31 @@ const { user, role, logout } = useAuth();
 </script>
 
 <template>
-  <div>
-    <h1 class="text-2xl font-bold">Administrator Dashboard</h1>
+  <div class="space-y-6">
+    <div>
+      <h1 class="font-display text-2xl font-bold text-white">Administrator Dashboard</h1>
 
-    <p class="mt-2 text-gray-500">PAMANA System Administration</p>
+      <p class="mt-2 text-white/50">PAMANA System Administration</p>
+    </div>
 
-    <UCard>
-      <div class="space-y-3">
+    <UCard class="glass glow-lime rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10' }">
+      <div class="space-y-3 text-white/80">
         <p>
-          <strong>User:</strong>
+          <strong class="text-white">User:</strong>
           {{ user?.username }}
         </p>
 
         <p>
-          <strong>Email:</strong>
+          <strong class="text-white">Email:</strong>
           {{ user?.email }}
         </p>
 
         <p>
-          <strong>Role:</strong>
+          <strong class="text-white">Role:</strong>
           {{ role }}
         </p>
 
-        <UButton color="error" variant="soft" @click="logout"> Logout </UButton>
+        <UButton color="error" variant="soft" class="rounded-full" @click="logout"> Logout </UButton>
       </div>
     </UCard>
   </div>

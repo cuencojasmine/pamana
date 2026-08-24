@@ -84,8 +84,6 @@ const onSubmit = async (
   <div
     class="
       min-h-screen
-      bg-gray-50
-      dark:bg-gray-950
       flex
       items-center
       justify-center
@@ -105,11 +103,14 @@ const onSubmit = async (
             items-center
             justify-center
             rounded-2xl
-            bg-primary
+            bg-gradient-to-br
+            from-lime-300
+            to-emerald-500
+            font-display
             text-2xl
             font-bold
-            text-white
-            shadow-sm
+            text-neutral-950
+            shadow-[0_0_40px_-10px_rgba(163,230,53,0.6)]
           "
         >
           P
@@ -117,11 +118,11 @@ const onSubmit = async (
 
         <h1
           class="
+            font-display
             text-3xl
             font-bold
             tracking-tight
-            text-gray-900
-            dark:text-white
+            text-white
           "
         >
           PAMANA
@@ -131,8 +132,7 @@ const onSubmit = async (
           class="
             mt-2
             text-sm
-            text-gray-500
-            dark:text-gray-400
+            text-white/50
           "
         >
           Pampanga AI-powered Mobility Access
@@ -140,15 +140,15 @@ const onSubmit = async (
         </p>
       </div>
 
-      <UCard>
+      <UCard class="glass glow-lime rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl', header: 'border-white/10', footer: 'border-white/10' }">
         <template #header>
-          <div>
+          <div class="relative z-10">
             <h2
               class="
+                font-display
                 text-xl
                 font-semibold
-                text-gray-900
-                dark:text-white
+                text-white
               "
             >
               Sign in
@@ -158,8 +158,7 @@ const onSubmit = async (
               class="
                 mt-1
                 text-sm
-                text-gray-500
-                dark:text-gray-400
+                text-white/50
               "
             >
               Enter your PAMANA account credentials.
@@ -170,7 +169,7 @@ const onSubmit = async (
         <UForm
           :schema="schema"
           :state="state"
-          class="space-y-5"
+          class="relative z-10 space-y-5"
           @submit="onSubmit"
         >
           <UFormField
@@ -228,6 +227,7 @@ const onSubmit = async (
             type="submit"
             block
             size="lg"
+            class="font-semibold text-neutral-950"
             :loading="loading"
             :disabled="loading"
           >
@@ -241,7 +241,7 @@ const onSubmit = async (
           mt-6
           text-center
           text-xs
-          text-gray-400
+          text-white/35
         "
       >
         Pilot Corridor:

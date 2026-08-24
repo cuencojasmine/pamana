@@ -156,20 +156,26 @@ const roleLabel = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+  <div class="min-h-screen">
     <!-- Desktop Sidebar -->
     <aside
-      class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:flex lg:flex-col"
+      class="glass-solid fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/10 lg:flex lg:flex-col"
     >
-      <div
-        class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-gray-800"
-      >
-        <div>
-          <h1 class="text-xl font-bold tracking-tight text-primary">PAMANA</h1>
+      <div class="flex h-20 items-center border-b border-white/10 px-6">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-lime-300 to-emerald-500 font-display text-base font-bold text-neutral-950"
+          >
+            P
+          </div>
 
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Rural Mobility Coordinator
-          </p>
+          <div>
+            <h1 class="font-display text-lg font-bold tracking-tight text-white">
+              PAMANA
+            </h1>
+
+            <p class="text-[11px] text-white/40">Rural Mobility Coordinator</p>
+          </div>
         </div>
       </div>
 
@@ -178,18 +184,20 @@ const roleLabel = computed(() => {
           v-for="item in navigationItems"
           :key="item.to"
           :to="item.to"
-          class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition"
           :class="
             isActive(item.to)
               ? `
-                bg-primary/10
-                text-primary
+                border border-lime-300/30
+                bg-lime-300/15
+                text-lime-300
               `
               : `
-                text-gray-600
-                hover:bg-gray-100
-                dark:text-gray-300
-                dark:hover:bg-gray-800
+                border border-transparent
+                text-white/55
+                hover:border-white/10
+                hover:bg-white/5
+                hover:text-white
               `
           "
         >
@@ -201,15 +209,13 @@ const roleLabel = computed(() => {
         </NuxtLink>
       </nav>
 
-      <div class="border-t border-gray-200 p-4 dark:border-gray-800">
+      <div class="border-t border-white/10 p-4">
         <div class="mb-3">
-          <p
-            class="truncate text-sm font-semibold text-gray-900 dark:text-white"
-          >
+          <p class="truncate text-sm font-semibold text-white">
             {{ user?.username }}
           </p>
 
-          <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+          <p class="truncate text-xs text-white/40">
             {{ roleLabel }}
           </p>
         </div>
@@ -219,6 +225,7 @@ const roleLabel = computed(() => {
           variant="soft"
           block
           icon="i-lucide-log-out"
+          class="bg-white/5 text-white/80 hover:bg-white/10"
           @click="logout"
         >
           Logout
@@ -228,20 +235,29 @@ const roleLabel = computed(() => {
 
     <!-- Mobile Header -->
     <header
-      class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-900 lg:hidden"
+      class="glass-solid sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 px-4 lg:hidden"
     >
-      <div>
-        <h1 class="font-bold text-primary">PAMANA</h1>
+      <div class="flex items-center gap-2.5">
+        <div
+          class="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-lime-300 to-emerald-500 font-display text-xs font-bold text-neutral-950"
+        >
+          P
+        </div>
 
-        <p class="text-xs text-gray-500">
-          {{ roleLabel }}
-        </p>
+        <div>
+          <h1 class="font-display font-bold text-white">PAMANA</h1>
+
+          <p class="text-[10px] text-white/40">
+            {{ roleLabel }}
+          </p>
+        </div>
       </div>
 
       <UButton
         color="neutral"
         variant="ghost"
         icon="i-lucide-menu"
+        class="text-white/70 hover:bg-white/10 hover:text-white"
         @click="isSidebarOpen = true"
       />
     </header>
@@ -249,22 +265,31 @@ const roleLabel = computed(() => {
     <!-- Mobile Navigation Drawer -->
     <USlideover v-model:open="isSidebarOpen" side="left">
       <template #content>
-        <div class="flex h-full flex-col bg-white dark:bg-gray-900">
+        <div class="glass-solid flex h-full flex-col">
           <div
-            class="flex h-20 items-center justify-between border-b border-gray-200 px-5 dark:border-gray-800"
+            class="flex h-20 items-center justify-between border-b border-white/10 px-5"
           >
-            <div>
-              <h2 class="font-bold text-primary">PAMANA</h2>
+            <div class="flex items-center gap-2.5">
+              <div
+                class="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-lime-300 to-emerald-500 font-display text-sm font-bold text-neutral-950"
+              >
+                P
+              </div>
 
-              <p class="text-xs text-gray-500">
-                {{ roleLabel }}
-              </p>
+              <div>
+                <h2 class="font-display font-bold text-white">PAMANA</h2>
+
+                <p class="text-[10px] text-white/40">
+                  {{ roleLabel }}
+                </p>
+              </div>
             </div>
 
             <UButton
               color="neutral"
               variant="ghost"
               icon="i-lucide-x"
+              class="text-white/70 hover:bg-white/10 hover:text-white"
               @click="isSidebarOpen = false"
             />
           </div>
@@ -274,14 +299,11 @@ const roleLabel = computed(() => {
               v-for="item in navigationItems"
               :key="item.to"
               :to="item.to"
-              class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium"
+              class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition"
               :class="
                 isActive(item.to)
-                  ? 'bg-primary/10 text-primary'
-                  : `
-                    text-gray-600
-                    dark:text-gray-300
-                  `
+                  ? 'border border-lime-300/30 bg-lime-300/15 text-lime-300'
+                  : 'border border-transparent text-white/55 hover:bg-white/5'
               "
               @click="isSidebarOpen = false"
             >
@@ -291,12 +313,12 @@ const roleLabel = computed(() => {
             </NuxtLink>
           </nav>
 
-          <div class="border-t border-gray-200 p-4 dark:border-gray-800">
-            <p class="text-sm font-semibold">
+          <div class="border-t border-white/10 p-4">
+            <p class="text-sm font-semibold text-white">
               {{ user?.username }}
             </p>
 
-            <p class="mb-3 text-xs text-gray-500">
+            <p class="mb-3 text-xs text-white/40">
               {{ user?.email }}
             </p>
 
@@ -305,6 +327,7 @@ const roleLabel = computed(() => {
               color="neutral"
               variant="soft"
               icon="i-lucide-log-out"
+              class="bg-white/5 text-white/80 hover:bg-white/10"
               @click="logout"
             >
               Logout
@@ -317,27 +340,27 @@ const roleLabel = computed(() => {
     <!-- Main Content -->
     <div class="lg:pl-64">
       <header
-        class="hidden h-20 items-center justify-between border-b border-gray-200 bg-white px-8 dark:border-gray-800 dark:bg-gray-900 lg:flex"
+        class="glass-solid hidden h-20 items-center justify-between border-b border-white/10 px-8 lg:flex"
       >
         <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">PAMANA</p>
+          <p class="text-sm text-white/40">PAMANA</p>
 
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
+          <p class="font-display text-lg font-semibold text-white">
             {{ roleLabel }} Workspace
           </p>
         </div>
 
         <div class="flex items-center gap-3">
-          <UBadge color="primary" variant="soft">
+          <UBadge class="bg-lime-300/15 text-lime-300 ring-1 ring-lime-300/30" variant="soft">
             {{ roleLabel }}
           </UBadge>
 
           <div class="text-right">
-            <p class="text-sm font-medium text-gray-900 dark:text-white">
+            <p class="text-sm font-medium text-white">
               {{ user?.username }}
             </p>
 
-            <p class="text-xs text-gray-500">
+            <p class="text-xs text-white/40">
               {{ user?.email }}
             </p>
           </div>
