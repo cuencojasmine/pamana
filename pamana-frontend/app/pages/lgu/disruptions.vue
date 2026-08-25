@@ -7,24 +7,103 @@ useHead({
   title: 'Disruptions | PAMANA'
 })
 
+const { apiFetch } = useApi()
 const toast = useToast()
 
-const disruptions = ref([
-  { id: 1, title: 'Flood — San Luis Segment', detail: 'Reported 7:04 AM · active · road partially passable', severity: 'High severity', tone: 'red', icon: 'i-lucide-cloud-rain', acknowledged: false },
-  { id: 2, title: 'Vehicle breakdown — NAA-1236', detail: 'Reported 6:20 AM · dispatcher notified', severity: 'Medium', tone: 'amber', icon: 'i-lucide-wrench', acknowledged: false },
-  { id: 3, title: 'Road clearance — OGC Stop', detail: 'Resolved yesterday, 8:12 AM', severity: 'Resolved', tone: 'lime', icon: 'i-lucide-check', acknowledged: true }
-])
-
-function acknowledge(id: number) {
-  const disruption = disruptions.value.find(item => item.id === id)
-  if (disruption) disruption.acknowledged = true
-
-  toast.add({
-    title: 'Disruption acknowledged',
-    description: 'The prototype status was updated locally.',
-    color: 'success'
-  })
+interface Disruption {
+  documentId: string
+  type: string
+  title: string
+  description: string | null
+  severity: string
+  starts_at: string
+  disruption_status: string
 }
+
+const TYPE_ICONS: Record<string, string> = {
+  flood: 'i-lucide-cloud-rain',
+  breakdown: 'i-lucide-wrench',
+  road_closure: 'i-lucide-triangle-alert',
+  accident: 'i-lucide-triangle-alert',
+  weather: 'i-lucide-cloud',
+  route_suspension: 'i-lucide-ban'
+}
+
+function formatReportedAt(iso: string) {
+  const date = new Date(iso)
+  const now = new Date()
+  const isToday = date.toDateString() === now.toDateString()
+  const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+
+  if (isToday) return `Reported ${time}`
+
+  return `Reported ${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}, ${time}`
+}
+
+const rawDisruptions = ref<Disruption[]>([])
+const acknowledging = ref<string | null>(null)
+
+const disruptions = computed(() =>
+  rawDisruptions.value.map(item => {
+    const isResolved = item.disruption_status !== 'active'
+    const tone = isResolved ? 'lime' : item.severity === 'critical' || item.severity === 'high' ? 'red' : 'amber'
+    const severityLabel = isResolved
+      ? 'Resolved'
+      : `${item.severity.charAt(0).toUpperCase()}${item.severity.slice(1)} severity`
+
+    return {
+      id: item.documentId,
+      title: item.title,
+      detail: `${formatReportedAt(item.starts_at)} · ${item.description || item.disruption_status}`,
+      severity: severityLabel,
+      tone,
+      icon: TYPE_ICONS[item.type] ?? 'i-lucide-triangle-alert',
+      acknowledged: isResolved
+    }
+  })
+)
+
+async function loadDisruptions() {
+  try {
+    const response = await apiFetch<{ data: Disruption[] }>('/api/disruptions', {
+      query: { sort: 'starts_at:desc' }
+    })
+    rawDisruptions.value = response.data
+  } catch {
+    rawDisruptions.value = []
+  }
+}
+
+async function acknowledge(id: string) {
+  acknowledging.value = id
+
+  try {
+    await apiFetch(`/api/disruptions/${id}`, {
+      method: 'PUT',
+      body: { data: { disruption_status: 'resolved', ends_at: new Date().toISOString() } }
+    })
+
+    toast.add({
+      title: 'Disruption acknowledged',
+      description: 'Marked resolved.',
+      color: 'success'
+    })
+
+    await loadDisruptions()
+  } catch (error: any) {
+    toast.add({
+      title: 'Unable to acknowledge disruption',
+      description: error?.data?.error?.message || 'Please try again.',
+      color: 'error'
+    })
+  } finally {
+    acknowledging.value = null
+  }
+}
+
+onMounted(() => {
+  loadDisruptions()
+})
 </script>
 
 <template>
@@ -73,10 +152,10 @@ function acknowledge(id: number) {
               v-if="item.tone !== 'lime'"
               type="button"
               class="btn-soft shrink-0 text-xs"
-              :disabled="item.acknowledged"
+              :disabled="item.acknowledged || acknowledging === item.id"
               @click="acknowledge(item.id)"
             >
-              {{ item.acknowledged ? 'Acknowledged' : 'Acknowledge' }}
+              {{ item.acknowledged ? 'Acknowledged' : acknowledging === item.id ? 'Acknowledging…' : 'Acknowledge' }}
             </button>
           </div>
         </UCard>

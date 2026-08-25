@@ -19,7 +19,8 @@
         "road_closure",
         "accident",
         "weather",
-        "route_suspension"
+        "route_suspension",
+        "breakdown"
       ]
     },
     "title": {

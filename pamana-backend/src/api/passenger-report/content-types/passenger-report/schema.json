@@ -18,7 +18,9 @@
         "vehicle_arrived",
         "vehicle_full",
         "seats_available",
-        "route_unavailable"
+        "route_unavailable",
+        "flood",
+        "vehicle_breakdown"
       ]
     },
     "latitude": {
@@ -26,6 +28,9 @@
     },
     "longitude": {
       "type": "decimal"
+    },
+    "location_note": {
+      "type": "string"
     },
     "reported_at": {
       "type": "datetime",
@@ -41,14 +46,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route.route",
-      "required": true,
       "inversedBy": "passenger_reports"
     },
     "stop": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::route-stop.route-stop",
-      "required": true,
       "inversedBy": "passenger_reports"
     },
     "vehicle": {

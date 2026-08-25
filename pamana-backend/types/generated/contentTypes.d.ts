@@ -517,7 +517,14 @@ export interface ApiDisruptionDisruption extends Struct.CollectionTypeSchema {
     starts_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     type: Schema.Attribute.Enumeration<
-      ['flood', 'road_closure', 'accident', 'weather', 'route_suspension']
+      [
+        'flood',
+        'road_closure',
+        'accident',
+        'weather',
+        'route_suspension',
+        'breakdown',
+      ]
     > &
       Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -682,6 +689,7 @@ export interface ApiPassengerReportPassengerReport
       'api::passenger-report.passenger-report'
     > &
       Schema.Attribute.Private;
+    location_note: Schema.Attribute.String;
     longitude: Schema.Attribute.Decimal;
     passenger: Schema.Attribute.Relation<
       'manyToOne',
@@ -694,14 +702,14 @@ export interface ApiPassengerReportPassengerReport
         'vehicle_full',
         'seats_available',
         'route_unavailable',
+        'flood',
+        'vehicle_breakdown',
       ]
     > &
       Schema.Attribute.Required;
     reported_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'> &
-      Schema.Attribute.Required;
-    stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'> &
-      Schema.Attribute.Required;
+    route: Schema.Attribute.Relation<'manyToOne', 'api::route.route'>;
+    stop: Schema.Attribute.Relation<'manyToOne', 'api::route-stop.route-stop'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

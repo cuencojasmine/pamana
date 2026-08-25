@@ -7,43 +7,114 @@ useHead({
   title: 'My Reports | PAMANA'
 })
 
+const { apiFetch } = useApi()
 const toast = useToast()
 const selectedType = ref('Flood')
 const location = ref('Santo Tomas Stop (auto-detected)')
+const submitting = ref(false)
 
 const reportTypes = ['Flood', 'Breakdown', 'Overcrowding', 'Road closure']
 
-const reports = [
-  {
-    title: 'Flooding reported',
-    details: 'Santo Tomas Stop · Today, 7:04 AM',
-    label: 'Flood',
-    icon: 'i-lucide-cloud-rain',
-    tone: 'red'
-  },
-  {
-    title: 'Overcrowded vehicle',
-    details: 'Route SL–SF 01 · Yesterday, 5:41 PM',
-    label: 'Overcrowding',
-    icon: 'i-lucide-users',
-    tone: 'amber'
-  },
-  {
-    title: 'Road cleared',
-    details: 'OGC Stop · May 20, 8:12 AM',
-    label: 'Resolved',
-    icon: 'i-lucide-check',
-    tone: 'lime'
-  }
-]
-
-function submitReport() {
-  toast.add({
-    title: 'Report prepared',
-    description: `${selectedType.value} at ${location.value}. Crowdsourced submission will be connected in Hackathon Priority 8.`,
-    color: 'success'
-  })
+const REPORT_TYPE_MAP: Record<string, string> = {
+  Flood: 'flood',
+  Breakdown: 'vehicle_breakdown',
+  Overcrowding: 'vehicle_full',
+  'Road closure': 'route_unavailable'
 }
+
+const REPORT_TYPE_DISPLAY: Record<string, { label: string; icon: string; tone: string }> = {
+  flood: { label: 'Flood', icon: 'i-lucide-cloud-rain', tone: 'red' },
+  vehicle_breakdown: { label: 'Breakdown', icon: 'i-lucide-wrench', tone: 'amber' },
+  vehicle_full: { label: 'Overcrowding', icon: 'i-lucide-users', tone: 'amber' },
+  route_unavailable: { label: 'Road closure', icon: 'i-lucide-triangle-alert', tone: 'red' },
+  vehicle_arrived: { label: 'Vehicle arrived', icon: 'i-lucide-bus-front', tone: 'lime' },
+  seats_available: { label: 'Seats available', icon: 'i-lucide-check', tone: 'lime' }
+}
+
+interface PassengerReport {
+  documentId: string
+  report_type: string
+  location_note: string | null
+  reported_at: string
+}
+
+function formatReportedAt(iso: string) {
+  const date = new Date(iso)
+  const now = new Date()
+  const isToday = date.toDateString() === now.toDateString()
+  const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+
+  if (isToday) return `Today, ${time}`
+
+  return `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}, ${time}`
+}
+
+const rawReports = ref<PassengerReport[]>([])
+
+const reports = computed(() =>
+  rawReports.value.map(report => {
+    const display = REPORT_TYPE_DISPLAY[report.report_type] ?? {
+      label: report.report_type,
+      icon: 'i-lucide-info',
+      tone: 'lime'
+    }
+
+    return {
+      title: `${display.label} reported`,
+      details: `${report.location_note || 'Location not specified'} · ${formatReportedAt(report.reported_at)}`,
+      label: display.label,
+      icon: display.icon,
+      tone: display.tone
+    }
+  })
+)
+
+async function loadReports() {
+  try {
+    const response = await apiFetch<{ data: PassengerReport[] }>('/api/passenger-reports', {
+      query: { sort: 'reported_at:desc' }
+    })
+    rawReports.value = response.data
+  } catch {
+    rawReports.value = []
+  }
+}
+
+async function submitReport() {
+  submitting.value = true
+
+  try {
+    await apiFetch('/api/passenger-reports', {
+      method: 'POST',
+      body: {
+        data: {
+          report_type: REPORT_TYPE_MAP[selectedType.value],
+          location_note: location.value || undefined
+        }
+      }
+    })
+
+    toast.add({
+      title: 'Report submitted',
+      description: `${selectedType.value} at ${location.value}.`,
+      color: 'success'
+    })
+
+    await loadReports()
+  } catch (error: any) {
+    toast.add({
+      title: 'Unable to submit report',
+      description: error?.data?.error?.message || 'Please try again.',
+      color: 'error'
+    })
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(() => {
+  loadReports()
+})
 </script>
 
 <template>
@@ -116,15 +187,12 @@ function submitReport() {
           size="lg"
           icon="i-lucide-send"
           class="mt-4 rounded-full font-semibold text-neutral-950"
-          :disabled="!location.trim()"
+          :loading="submitting"
+          :disabled="submitting || !location.trim()"
           @click="submitReport"
         >
           Submit Report
         </UButton>
-
-        <p class="mt-3 text-xs leading-relaxed text-neutral-400">
-          Demo UI only. Reports are not sent until the crowdsourcing endpoint is connected.
-        </p>
       </UCard>
     </div>
   </div>
