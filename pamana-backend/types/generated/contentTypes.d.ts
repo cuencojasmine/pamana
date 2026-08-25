@@ -991,6 +991,9 @@ export interface ApiVehicleVehicle extends Struct.CollectionTypeSchema {
       'api::vehicle.vehicle'
     > &
       Schema.Attribute.Private;
+    occupancy_level: Schema.Attribute.Enumeration<
+      ['empty', 'low', 'moderate', 'near_full', 'full']
+    >;
     passenger_reports: Schema.Attribute.Relation<
       'oneToMany',
       'api::passenger-report.passenger-report'
