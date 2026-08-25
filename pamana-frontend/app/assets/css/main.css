@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "@nuxt/ui";
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -23,9 +23,9 @@ body {
   color: #16181a;
   font-family: var(--font-sans);
   background-image:
-    radial-gradient(circle at 12% 8%, rgb(163 230 53 / 0.14), transparent 38%),
-    radial-gradient(circle at 88% 0%, rgb(255 141 158 / 0.14), transparent 40%),
-    radial-gradient(rgb(0 0 0 / 0.05) 1px, transparent 1px);
+    radial-gradient(circle at 12% 8%, rgb(163 230 53 / 0.16), transparent 38%),
+    radial-gradient(circle at 88% 0%, rgb(20 184 166 / 0.12), transparent 42%),
+    radial-gradient(rgb(0 0 0 / 0.045) 1px, transparent 1px);
   background-size: auto, auto, 22px 22px;
   background-attachment: fixed, fixed, fixed;
   min-height: 100vh;
@@ -60,6 +60,24 @@ h1, h2, h3, h4, .font-display {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+}
+
+@utility glow-teal {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 65%;
+    height: 160%;
+    background: radial-gradient(circle, rgb(20 184 166 / 0.25), transparent 72%);
+    filter: blur(30px);
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 @utility glow-lime {
   &::before {
@@ -121,6 +139,161 @@ h1, h2, h3, h4, .font-display {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.rounded-30 {
+  border-radius: 1.75rem;
+}
+
+.stat-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.65rem 1.2rem;
+  background: linear-gradient(135deg, #a3e635, #84cc16);
+  color: #1a2e05;
+  font-size: 0.84rem;
+  font-weight: 700;
+  box-shadow: 0 14px 26px -18px rgb(77 124 15 / 0.75);
+  cursor: pointer;
+}
+
+.btn-primary,
+.btn-soft {
+  min-height: 2.5rem;
+}
+
+.btn-primary:hover {
+  filter: saturate(1.05) brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+  opacity: 0.58;
+}
+
+.btn-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid rgb(0 0 0 / 0.07);
+  border-radius: 999px;
+  padding: 0.58rem 1.05rem;
+  background: rgb(0 0 0 / 0.045);
+  color: #374035;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-soft:hover {
+  border-color: rgb(0 0 0 / 0.12);
+  background: rgb(0 0 0 / 0.065);
+}
+
+.mapfake {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.35)),
+    repeating-linear-gradient(0deg, rgb(101 163 13 / 0.08) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, rgb(101 163 13 / 0.08) 0 1px, transparent 1px 26px),
+    linear-gradient(135deg, #eef6e4, #e3f0e6 55%, #dcecec);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.82rem;
+}
+
+.data-table thead th {
+  border-bottom: 1px solid rgb(0 0 0 / 0.08);
+  padding: 0.6rem 0.75rem;
+  color: #8b9188;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.data-table tbody td {
+  border-bottom: 1px solid rgb(0 0 0 / 0.05);
+  padding: 0.75rem;
+  color: #2b302a;
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr:hover {
+  background: rgb(0 0 0 / 0.02);
+}
+
+.badge-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+}
+
+input,
+select,
+textarea {
+  accent-color: #84cc16;
+}
+
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  border-radius: 0.85rem;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+:focus-visible {
+  outline: 3px solid rgb(163 230 53 / 0.3);
+  outline-offset: 2px;
 }
 
 ::selection {

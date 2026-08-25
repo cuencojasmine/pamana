@@ -148,7 +148,7 @@ const performDelete = async () => {
 
 <template>
   <div class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="glass glow-lime rounded-30 flex flex-wrap items-start justify-between gap-4 p-5 sm:p-6">
       <div>
         <p class="text-sm font-medium text-lime-600">
           Transportation Management
@@ -165,7 +165,7 @@ const performDelete = async () => {
 
       <UButton
         icon="i-lucide-plus"
-        class="font-semibold text-neutral-950"
+        class="rounded-full font-semibold text-neutral-950 shadow-[0_12px_24px_-16px_rgba(77,124,15,0.8)]"
         @click="openCreate"
       >
         Add Cooperative
@@ -173,7 +173,7 @@ const performDelete = async () => {
     </div>
 
     <UCard
-      class="glass glow-lime rounded-3xl"
+      class="glass rounded-30"
       :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10 p-0' }"
     >
       <div
@@ -205,7 +205,7 @@ const performDelete = async () => {
         v-else
         class="overflow-x-auto"
       >
-        <table class="w-full text-left text-sm">
+        <table class="data-table">
           <thead>
             <tr class="border-b border-neutral-900/10 text-xs uppercase tracking-wide text-neutral-400">
               <th class="px-6 py-3 font-medium">Name</th>

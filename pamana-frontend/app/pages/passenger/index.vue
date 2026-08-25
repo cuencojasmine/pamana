@@ -29,23 +29,16 @@ const quickPlaces = [
 
 <template>
   <div class="space-y-6">
-    <div>
-      <p class="text-sm font-medium text-lime-600">Passenger</p>
-
-      <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-neutral-900">
-        Welcome, {{ user?.username }}
-      </h1>
-
-      <p class="mt-2 text-neutral-500">
-        Plan your trip and check transportation availability across the PAMANA
-        pilot corridor.
-      </p>
-    </div>
+    <PamanaPageHeader
+      role="passenger"
+      :title="`Welcome, ${user?.username || 'Passenger'}`"
+      subtitle="Plan trips and check availability across the pilot corridor."
+    />
 
     <!-- TOP: hero trip search card -->
     <UCard
-      class="glass glow-sunset rounded-3xl"
-      :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10' }"
+      class="glass glow-sunset rounded-30"
+      :ui="{ root: 'ring-0 rounded-[1.75rem]', body: 'relative z-10' }"
     >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -118,7 +111,7 @@ const quickPlaces = [
     </UCard>
 
     <!-- MIDDLE: quick places -->
-    <UCard class="glass rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl' }">
+    <UCard class="glass rounded-30" :ui="{ root: 'ring-0 rounded-[1.75rem]' }">
       <div class="flex items-center justify-between">
         <p class="font-display text-sm font-semibold text-neutral-900">Quick Places</p>
 
@@ -136,7 +129,7 @@ const quickPlaces = [
           v-for="place in quickPlaces"
           :key="place.name"
           to="/passenger/map"
-          class="card-lift flex flex-col items-center gap-2 rounded-2xl border border-neutral-900/10 bg-neutral-900/5/[0.03] px-2 py-4 text-center"
+          class="card-lift flex flex-col items-center gap-2 rounded-2xl border border-neutral-900/10 bg-neutral-900/[0.03] px-2 py-4 text-center"
         >
           <span class="flex size-9 items-center justify-center rounded-full bg-lime-300/15">
             <UIcon :name="place.icon" class="size-4 text-lime-600" />
@@ -153,8 +146,8 @@ const quickPlaces = [
 
     <div class="grid gap-4 md:grid-cols-3">
       <UCard
-        class="glass glow-lime card-lift rounded-3xl"
-        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
+        class="glass glow-lime card-lift rounded-30"
+        :ui="{ root: 'ring-0 rounded-[1.75rem]', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
       >
         <div>
           <UIcon name="i-lucide-route" class="mb-3 size-8 text-lime-600" />
@@ -174,8 +167,8 @@ const quickPlaces = [
       </UCard>
 
       <UCard
-        class="glass glow-lime card-lift rounded-3xl"
-        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
+        class="glass glow-lime card-lift rounded-30"
+        :ui="{ root: 'ring-0 rounded-[1.75rem]', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
       >
         <div>
           <UIcon name="i-lucide-map" class="mb-3 size-8 text-lime-600" />
@@ -195,8 +188,8 @@ const quickPlaces = [
       </UCard>
 
       <UCard
-        class="glass glow-lime card-lift rounded-3xl"
-        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
+        class="glass glow-lime card-lift rounded-30"
+        :ui="{ root: 'ring-0 rounded-[1.75rem]', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
       >
         <div>
           <UIcon

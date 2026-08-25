@@ -98,97 +98,58 @@ const onSubmit = async (
 </script>
 
 <template>
-  <div
-    class="
-      min-h-screen
-      flex
-      items-center
-      justify-center
-      px-4
-      py-10
-    "
-  >
-    <div class="w-full max-w-md">
-      <div class="mb-8 text-center">
-        <div
-          class="
-            mx-auto
-            mb-4
-            flex
-            h-16
-            w-16
-            items-center
-            justify-center
-            rounded-2xl
-            bg-gradient-to-br
-            from-lime-300
-            to-emerald-500
-            font-display
-            text-2xl
-            font-bold
-            text-neutral-950
-            shadow-[0_0_40px_-10px_rgba(163,230,53,0.6)]
-          "
-        >
-          P
+  <main class="flex min-h-screen items-center px-4 py-6 sm:px-6 lg:px-8">
+    <section class="glass mx-auto grid w-full max-w-6xl overflow-hidden rounded-30 lg:grid-cols-[0.9fr_1.1fr]">
+      <aside class="glow-teal relative flex flex-col justify-between bg-gradient-to-br from-lime-50/90 via-emerald-50/80 to-teal-50/90 p-7 sm:p-10 lg:p-12">
+        <div class="relative z-10">
+          <NuxtLink to="/login" class="inline-flex items-center gap-3">
+            <span class="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-lime-300 to-emerald-500 font-display text-lg font-bold text-neutral-950 shadow-[0_14px_35px_-16px_rgba(77,124,15,0.8)]">P</span>
+            <span>
+              <span class="block font-display text-xl font-bold tracking-tight text-neutral-900">PAMANA</span>
+              <span class="block text-[11px] text-neutral-500">Rural Mobility Coordinator</span>
+            </span>
+          </NuxtLink>
+
+          <span class="pill mt-12 bg-teal-100 text-teal-700">
+            <UIcon name="i-lucide-user-round-plus" class="size-3.5" />
+            Passenger registration
+          </span>
+
+          <h1 class="mt-4 font-display text-4xl font-bold leading-[1.08] tracking-tight text-neutral-900">
+            Your everyday trips,
+            <span class="text-gradient-lime">made clearer.</span>
+          </h1>
+
+          <p class="mt-5 max-w-sm text-sm leading-6 text-neutral-500">
+            Create one account to plan routes, check mobility conditions, and send helpful corridor reports.
+          </p>
         </div>
 
-        <h1
-          class="
-            font-display
-            text-3xl
-            font-bold
-            tracking-tight
-            text-neutral-900
-          "
-        >
-          PAMANA
-        </h1>
-
-        <p
-          class="
-            mt-2
-            text-sm
-            text-neutral-500
-          "
-        >
-          Pampanga AI-powered Mobility Access
-          and Navigation Assistant
-        </p>
-      </div>
-
-      <UCard class="glass glow-lime rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl', header: 'border-neutral-900/10', footer: 'border-neutral-900/10' }">
-        <template #header>
-          <div class="relative z-10">
-            <h2
-              class="
-                font-display
-                text-xl
-                font-semibold
-                text-neutral-900
-              "
-            >
-              Create a passenger account
-            </h2>
-
-            <p
-              class="
-                mt-1
-                text-sm
-                text-neutral-500
-              "
-            >
-              Register to plan trips and report conditions on PAMANA.
-            </p>
+        <div class="relative z-10 mt-10 space-y-3">
+          <div v-for="item in [
+            ['i-lucide-route', 'Compare available trip options'],
+            ['i-lucide-map', 'Explore the pilot corridor'],
+            ['i-lucide-message-square-warning', 'Share passenger conditions']
+          ]" :key="item[1]" class="glass-solid flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-neutral-700">
+            <span class="flex size-8 items-center justify-center rounded-xl bg-lime-100 text-lime-700">
+              <UIcon :name="item[0]" class="size-4" />
+            </span>
+            {{ item[1] }}
           </div>
-        </template>
+        </div>
+      </aside>
 
-        <UForm
-          :schema="schema"
-          :state="state"
-          class="relative z-10 space-y-5"
-          @submit="onSubmit"
-        >
+      <div class="bg-white/55 p-7 sm:p-10 lg:p-12">
+        <div class="mx-auto max-w-xl">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-lime-600">Get started</p>
+              <h2 class="mt-1 font-display text-3xl font-bold tracking-tight text-neutral-900">Create your account</h2>
+              <p class="mt-2 text-sm text-neutral-500">Passenger accounts can be created here. Staff accounts are managed by PAMANA administrators.</p>
+            </div>
+          </div>
+
+          <UForm :schema="schema" :state="state" class="mt-8 space-y-5" @submit="onSubmit">
           <div class="grid grid-cols-2 gap-4">
             <UFormField
               label="First Name"
@@ -198,7 +159,7 @@ const onSubmit = async (
               <UInput
                 v-model="state.firstName"
                 placeholder="Juan"
-                size="lg"
+                size="xl"
                 class="w-full"
               />
             </UFormField>
@@ -211,7 +172,7 @@ const onSubmit = async (
               <UInput
                 v-model="state.lastName"
                 placeholder="Dela Cruz"
-                size="lg"
+                size="xl"
                 class="w-full"
               />
             </UFormField>
@@ -227,7 +188,7 @@ const onSubmit = async (
               placeholder="Choose a username"
               icon="i-lucide-user"
               autocomplete="username"
-              size="lg"
+              size="xl"
               class="w-full"
             />
           </UFormField>
@@ -243,7 +204,7 @@ const onSubmit = async (
               placeholder="Enter your email"
               icon="i-lucide-mail"
               autocomplete="email"
-              size="lg"
+              size="xl"
               class="w-full"
             />
           </UFormField>
@@ -257,7 +218,7 @@ const onSubmit = async (
               placeholder="09XX XXX XXXX"
               icon="i-lucide-phone"
               autocomplete="tel"
-              size="lg"
+              size="xl"
               class="w-full"
             />
           </UFormField>
@@ -273,7 +234,7 @@ const onSubmit = async (
               placeholder="Create a password"
               icon="i-lucide-lock"
               autocomplete="new-password"
-              size="lg"
+              size="xl"
               class="w-full"
             >
               <template #trailing>
@@ -301,44 +262,28 @@ const onSubmit = async (
           <UButton
             type="submit"
             block
-            size="lg"
-            class="font-semibold text-neutral-950"
+            size="xl"
+            icon="i-lucide-arrow-right"
+            trailing
+            class="rounded-full font-semibold text-neutral-950 shadow-[0_14px_28px_-18px_rgba(77,124,15,0.85)]"
             :loading="loading"
             :disabled="loading"
           >
             Create Account
           </UButton>
-        </UForm>
-      </UCard>
+          </UForm>
 
-      <p
-        class="
-          mt-6
-          text-center
-          text-sm
-          text-neutral-500
-        "
-      >
-        Already have an account?
-        <NuxtLink
-          to="/login"
-          class="font-medium text-lime-600 hover:underline"
-        >
-          Sign in
-        </NuxtLink>
-      </p>
+          <p class="mt-7 text-center text-sm text-neutral-500">
+            Already have an account?
+            <NuxtLink to="/login" class="font-semibold text-lime-600 hover:text-lime-700 hover:underline">Sign in</NuxtLink>
+          </p>
 
-      <p
-        class="
-          mt-2
-          text-center
-          text-xs
-          text-neutral-400
-        "
-      >
-        Pilot Corridor:
-        San Luis ↔ City of San Fernando, Pampanga
-      </p>
-    </div>
-  </div>
+          <p class="mt-3 flex items-center justify-center gap-2 text-center text-xs text-neutral-400">
+            <UIcon name="i-lucide-map-pin" class="size-3.5 text-lime-600" />
+            San Luis ↔ City of San Fernando pilot corridor
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
