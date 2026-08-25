@@ -159,9 +159,9 @@ const roleLabel = computed(() => {
   <div class="min-h-screen">
     <!-- Desktop Sidebar -->
     <aside
-      class="glass-solid fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/10 lg:flex lg:flex-col"
+      class="glass-solid fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-neutral-900/10 lg:flex lg:flex-col"
     >
-      <div class="flex h-20 items-center border-b border-white/10 px-6">
+      <div class="flex h-20 items-center border-b border-neutral-900/10 px-6">
         <div class="flex items-center gap-3">
           <div
             class="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-lime-300 to-emerald-500 font-display text-base font-bold text-neutral-950"
@@ -170,11 +170,11 @@ const roleLabel = computed(() => {
           </div>
 
           <div>
-            <h1 class="font-display text-lg font-bold tracking-tight text-white">
+            <h1 class="font-display text-lg font-bold tracking-tight text-neutral-900">
               PAMANA
             </h1>
 
-            <p class="text-[11px] text-white/40">Rural Mobility Coordinator</p>
+            <p class="text-[11px] text-neutral-400">Rural Mobility Coordinator</p>
           </div>
         </div>
       </div>
@@ -190,14 +190,14 @@ const roleLabel = computed(() => {
               ? `
                 border border-lime-300/30
                 bg-lime-300/15
-                text-lime-300
+                text-lime-600
               `
               : `
                 border border-transparent
-                text-white/55
-                hover:border-white/10
-                hover:bg-white/5
-                hover:text-white
+                text-neutral-500
+                hover:border-neutral-900/10
+                hover:bg-neutral-900/[0.04]
+                hover:text-neutral-900
               `
           "
         >
@@ -209,13 +209,13 @@ const roleLabel = computed(() => {
         </NuxtLink>
       </nav>
 
-      <div class="border-t border-white/10 p-4">
+      <div class="border-t border-neutral-900/10 p-4">
         <div class="mb-3">
-          <p class="truncate text-sm font-semibold text-white">
+          <p class="truncate text-sm font-semibold text-neutral-900">
             {{ user?.username }}
           </p>
 
-          <p class="truncate text-xs text-white/40">
+          <p class="truncate text-xs text-neutral-400">
             {{ roleLabel }}
           </p>
         </div>
@@ -225,7 +225,7 @@ const roleLabel = computed(() => {
           variant="soft"
           block
           icon="i-lucide-log-out"
-          class="bg-white/5 text-white/80 hover:bg-white/10"
+          class="bg-neutral-900/[0.04] text-neutral-700 hover:bg-neutral-900/[0.06]"
           @click="logout"
         >
           Logout
@@ -235,7 +235,7 @@ const roleLabel = computed(() => {
 
     <!-- Mobile Header -->
     <header
-      class="glass-solid sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 px-4 lg:hidden"
+      class="glass-solid sticky top-0 z-30 flex h-16 items-center justify-between border-b border-neutral-900/10 px-4 lg:hidden"
     >
       <div class="flex items-center gap-2.5">
         <div
@@ -245,9 +245,9 @@ const roleLabel = computed(() => {
         </div>
 
         <div>
-          <h1 class="font-display font-bold text-white">PAMANA</h1>
+          <h1 class="font-display font-bold text-neutral-900">PAMANA</h1>
 
-          <p class="text-[10px] text-white/40">
+          <p class="text-[10px] text-neutral-400">
             {{ roleLabel }}
           </p>
         </div>
@@ -257,7 +257,7 @@ const roleLabel = computed(() => {
         color="neutral"
         variant="ghost"
         icon="i-lucide-menu"
-        class="text-white/70 hover:bg-white/10 hover:text-white"
+        class="text-neutral-600 hover:bg-neutral-900/[0.06] hover:text-neutral-900"
         @click="isSidebarOpen = true"
       />
     </header>
@@ -267,7 +267,7 @@ const roleLabel = computed(() => {
       <template #content>
         <div class="glass-solid flex h-full flex-col">
           <div
-            class="flex h-20 items-center justify-between border-b border-white/10 px-5"
+            class="flex h-20 items-center justify-between border-b border-neutral-900/10 px-5"
           >
             <div class="flex items-center gap-2.5">
               <div
@@ -277,9 +277,9 @@ const roleLabel = computed(() => {
               </div>
 
               <div>
-                <h2 class="font-display font-bold text-white">PAMANA</h2>
+                <h2 class="font-display font-bold text-neutral-900">PAMANA</h2>
 
-                <p class="text-[10px] text-white/40">
+                <p class="text-[10px] text-neutral-400">
                   {{ roleLabel }}
                 </p>
               </div>
@@ -289,7 +289,7 @@ const roleLabel = computed(() => {
               color="neutral"
               variant="ghost"
               icon="i-lucide-x"
-              class="text-white/70 hover:bg-white/10 hover:text-white"
+              class="text-neutral-600 hover:bg-neutral-900/[0.06] hover:text-neutral-900"
               @click="isSidebarOpen = false"
             />
           </div>
@@ -302,8 +302,8 @@ const roleLabel = computed(() => {
               class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition"
               :class="
                 isActive(item.to)
-                  ? 'border border-lime-300/30 bg-lime-300/15 text-lime-300'
-                  : 'border border-transparent text-white/55 hover:bg-white/5'
+                  ? 'border border-lime-300/30 bg-lime-300/15 text-lime-600'
+                  : 'border border-transparent text-neutral-500 hover:bg-neutral-900/[0.04]'
               "
               @click="isSidebarOpen = false"
             >
@@ -313,12 +313,12 @@ const roleLabel = computed(() => {
             </NuxtLink>
           </nav>
 
-          <div class="border-t border-white/10 p-4">
-            <p class="text-sm font-semibold text-white">
+          <div class="border-t border-neutral-900/10 p-4">
+            <p class="text-sm font-semibold text-neutral-900">
               {{ user?.username }}
             </p>
 
-            <p class="mb-3 text-xs text-white/40">
+            <p class="mb-3 text-xs text-neutral-400">
               {{ user?.email }}
             </p>
 
@@ -327,7 +327,7 @@ const roleLabel = computed(() => {
               color="neutral"
               variant="soft"
               icon="i-lucide-log-out"
-              class="bg-white/5 text-white/80 hover:bg-white/10"
+              class="bg-neutral-900/[0.04] text-neutral-700 hover:bg-neutral-900/[0.06]"
               @click="logout"
             >
               Logout
@@ -340,27 +340,27 @@ const roleLabel = computed(() => {
     <!-- Main Content -->
     <div class="lg:pl-64">
       <header
-        class="glass-solid hidden h-20 items-center justify-between border-b border-white/10 px-8 lg:flex"
+        class="glass-solid hidden h-20 items-center justify-between border-b border-neutral-900/10 px-8 lg:flex"
       >
         <div>
-          <p class="text-sm text-white/40">PAMANA</p>
+          <p class="text-sm text-neutral-400">PAMANA</p>
 
-          <p class="font-display text-lg font-semibold text-white">
+          <p class="font-display text-lg font-semibold text-neutral-900">
             {{ roleLabel }} Workspace
           </p>
         </div>
 
         <div class="flex items-center gap-3">
-          <UBadge class="bg-lime-300/15 text-lime-300 ring-1 ring-lime-300/30" variant="soft">
+          <UBadge class="!bg-lime-300/15 !text-lime-600 ring-1 ring-lime-300/30" variant="soft">
             {{ roleLabel }}
           </UBadge>
 
           <div class="text-right">
-            <p class="text-sm font-medium text-white">
+            <p class="text-sm font-medium text-neutral-900">
               {{ user?.username }}
             </p>
 
-            <p class="text-xs text-white/40">
+            <p class="text-xs text-neutral-400">
               {{ user?.email }}
             </p>
           </div>

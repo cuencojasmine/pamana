@@ -122,7 +122,7 @@ const onSubmit = async (
             text-3xl
             font-bold
             tracking-tight
-            text-white
+            text-neutral-900
           "
         >
           PAMANA
@@ -132,7 +132,7 @@ const onSubmit = async (
           class="
             mt-2
             text-sm
-            text-white/50
+            text-neutral-500
           "
         >
           Pampanga AI-powered Mobility Access
@@ -140,7 +140,7 @@ const onSubmit = async (
         </p>
       </div>
 
-      <UCard class="glass glow-lime rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl', header: 'border-white/10', footer: 'border-white/10' }">
+      <UCard class="glass glow-lime rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl', header: 'border-neutral-900/10', footer: 'border-neutral-900/10' }">
         <template #header>
           <div class="relative z-10">
             <h2
@@ -148,7 +148,7 @@ const onSubmit = async (
                 font-display
                 text-xl
                 font-semibold
-                text-white
+                text-neutral-900
               "
             >
               Sign in
@@ -158,7 +158,7 @@ const onSubmit = async (
               class="
                 mt-1
                 text-sm
-                text-white/50
+                text-neutral-500
               "
             >
               Enter your PAMANA account credentials.
@@ -241,7 +241,7 @@ const onSubmit = async (
           mt-6
           text-center
           text-xs
-          text-white/35
+          text-neutral-400
         "
       >
         Pilot Corridor:

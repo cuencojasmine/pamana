@@ -26,10 +26,10 @@ onMounted(async () => {
   <div class="min-h-screen flex items-center justify-center">
     <div class="text-center">
       <div
-        class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-lime-300"
+        class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-neutral-900/10 border-t-lime-300"
       />
 
-      <p class="mt-4 font-display text-sm text-white/50">Loading PAMANA...</p>
+      <p class="mt-4 font-display text-sm text-neutral-500">Loading PAMANA...</p>
     </div>
   </div>
 </template>

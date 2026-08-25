@@ -30,13 +30,13 @@ const quickPlaces = [
 <template>
   <div class="space-y-6">
     <div>
-      <p class="text-sm font-medium text-lime-300">Passenger</p>
+      <p class="text-sm font-medium text-lime-600">Passenger</p>
 
-      <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-white">
+      <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-neutral-900">
         Welcome, {{ user?.username }}
       </h1>
 
-      <p class="mt-2 text-white/50">
+      <p class="mt-2 text-neutral-500">
         Plan your trip and check transportation availability across the PAMANA
         pilot corridor.
       </p>
@@ -49,50 +49,50 @@ const quickPlaces = [
     >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-navigation" class="size-4 text-lime-300" />
+          <UIcon name="i-lucide-navigation" class="size-4 text-lime-600" />
 
-          <p class="font-display text-sm font-semibold text-white">
+          <p class="font-display text-sm font-semibold text-neutral-900">
             Plan Your Trip
           </p>
         </div>
 
-        <UBadge variant="soft" class="bg-white/10 text-white/60" size="sm">
+        <UBadge variant="soft" color="neutral" class="!bg-neutral-900/[0.06] !text-neutral-500" size="sm">
           {{ PILOT_CORRIDOR }}
         </UBadge>
       </div>
 
       <div class="mt-5 space-y-2">
         <div
-          class="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+          class="flex items-center gap-3 rounded-2xl border border-neutral-900/10 bg-neutral-900/[0.04] px-4 py-3"
         >
-          <span class="flex size-8 items-center justify-center rounded-full bg-white/10">
-            <UIcon name="i-lucide-circle" class="size-3 text-white/60" />
+          <span class="flex size-8 items-center justify-center rounded-full bg-neutral-900/[0.06]">
+            <UIcon name="i-lucide-circle" class="size-3 text-neutral-500" />
           </span>
 
           <div>
-            <p class="text-[11px] uppercase tracking-wide text-white/40">From</p>
+            <p class="text-[11px] uppercase tracking-wide text-neutral-400">From</p>
 
-            <p class="text-sm font-medium text-white">San Luis, Pampanga</p>
+            <p class="text-sm font-medium text-neutral-900">San Luis, Pampanga</p>
           </div>
         </div>
 
         <div class="flex items-center gap-3 pl-[1.15rem]">
-          <div class="h-4 w-px border-l border-dashed border-white/15" />
+          <div class="h-4 w-px border-l border-dashed border-neutral-900/12" />
 
-          <UIcon name="i-lucide-arrow-down-up" class="size-3.5 text-white/30" />
+          <UIcon name="i-lucide-arrow-down-up" class="size-3.5 text-neutral-400" />
         </div>
 
         <div
           class="flex items-center gap-3 rounded-2xl border border-lime-300/20 bg-lime-300/[0.06] px-4 py-3"
         >
           <span class="flex size-8 items-center justify-center rounded-full bg-lime-300/15">
-            <UIcon name="i-lucide-map-pin" class="size-3.5 text-lime-300" />
+            <UIcon name="i-lucide-map-pin" class="size-3.5 text-lime-600" />
           </span>
 
           <div>
-            <p class="text-[11px] uppercase tracking-wide text-white/40">To</p>
+            <p class="text-[11px] uppercase tracking-wide text-neutral-400">To</p>
 
-            <p class="text-sm font-medium text-white">
+            <p class="text-sm font-medium text-neutral-900">
               City of San Fernando, Pampanga
             </p>
           </div>
@@ -100,7 +100,7 @@ const quickPlaces = [
       </div>
 
       <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex items-center gap-2 text-sm text-white/50">
+        <div class="flex items-center gap-2 text-sm text-neutral-500">
           <UIcon name="i-lucide-clock" class="size-4" />
 
           Today · next available departure
@@ -120,11 +120,11 @@ const quickPlaces = [
     <!-- MIDDLE: quick places -->
     <UCard class="glass rounded-3xl" :ui="{ root: 'ring-0 rounded-3xl' }">
       <div class="flex items-center justify-between">
-        <p class="font-display text-sm font-semibold text-white">Quick Places</p>
+        <p class="font-display text-sm font-semibold text-neutral-900">Quick Places</p>
 
         <NuxtLink
           to="/passenger/map"
-          class="flex items-center gap-1 text-xs font-medium text-lime-300 hover:text-lime-200"
+          class="flex items-center gap-1 text-xs font-medium text-lime-600 hover:text-lime-700"
         >
           See all
           <UIcon name="i-lucide-chevron-right" class="size-3.5" />
@@ -136,16 +136,16 @@ const quickPlaces = [
           v-for="place in quickPlaces"
           :key="place.name"
           to="/passenger/map"
-          class="card-lift flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-2 py-4 text-center"
+          class="card-lift flex flex-col items-center gap-2 rounded-2xl border border-neutral-900/10 bg-neutral-900/5/[0.03] px-2 py-4 text-center"
         >
           <span class="flex size-9 items-center justify-center rounded-full bg-lime-300/15">
-            <UIcon :name="place.icon" class="size-4 text-lime-300" />
+            <UIcon :name="place.icon" class="size-4 text-lime-600" />
           </span>
 
           <div>
-            <p class="text-xs font-semibold text-white">{{ place.name }}</p>
+            <p class="text-xs font-semibold text-neutral-900">{{ place.name }}</p>
 
-            <p class="text-[10px] text-white/40">{{ place.subtitle }}</p>
+            <p class="text-[10px] text-neutral-400">{{ place.subtitle }}</p>
           </div>
         </NuxtLink>
       </div>
@@ -154,14 +154,14 @@ const quickPlaces = [
     <div class="grid gap-4 md:grid-cols-3">
       <UCard
         class="glass glow-lime card-lift rounded-3xl"
-        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-white/10' }"
+        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
       >
         <div>
-          <UIcon name="i-lucide-route" class="mb-3 size-8 text-lime-300" />
+          <UIcon name="i-lucide-route" class="mb-3 size-8 text-lime-600" />
 
-          <h2 class="font-display font-semibold text-white">Plan a Trip</h2>
+          <h2 class="font-display font-semibold text-neutral-900">Plan a Trip</h2>
 
-          <p class="mt-1 text-sm text-white/50">
+          <p class="mt-1 text-sm text-neutral-500">
             Compare transportation options.
           </p>
         </div>
@@ -175,14 +175,14 @@ const quickPlaces = [
 
       <UCard
         class="glass glow-lime card-lift rounded-3xl"
-        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-white/10' }"
+        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
       >
         <div>
-          <UIcon name="i-lucide-map" class="mb-3 size-8 text-lime-300" />
+          <UIcon name="i-lucide-map" class="mb-3 size-8 text-lime-600" />
 
-          <h2 class="font-display font-semibold text-white">Live Map</h2>
+          <h2 class="font-display font-semibold text-neutral-900">Live Map</h2>
 
-          <p class="mt-1 text-sm text-white/50">
+          <p class="mt-1 text-sm text-neutral-500">
             View routes and active vehicles.
           </p>
         </div>
@@ -196,17 +196,17 @@ const quickPlaces = [
 
       <UCard
         class="glass glow-lime card-lift rounded-3xl"
-        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-white/10' }"
+        :ui="{ root: 'ring-0 rounded-3xl', body: 'relative z-10', footer: 'relative z-10 border-neutral-900/10' }"
       >
         <div>
           <UIcon
             name="i-lucide-message-square-warning"
-            class="mb-3 size-8 text-lime-300"
+            class="mb-3 size-8 text-lime-600"
           />
 
-          <h2 class="font-display font-semibold text-white">Report Conditions</h2>
+          <h2 class="font-display font-semibold text-neutral-900">Report Conditions</h2>
 
-          <p class="mt-1 text-sm text-white/50">
+          <p class="mt-1 text-sm text-neutral-500">
             Help improve PAMANA's transport data.
           </p>
         </div>
