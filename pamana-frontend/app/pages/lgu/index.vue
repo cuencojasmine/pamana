@@ -7,6 +7,7 @@ useHead({
   title: 'Command Center | PAMANA'
 })
 
+const { apiFetch } = useApi()
 const toast = useToast()
 
 const stops = [
@@ -16,11 +17,47 @@ const stops = [
   { name: 'OGC Stop', sequence: 4, expected: 220, wait: '12 min', status: 'Shortage' }
 ]
 
-const fleet = [
-  { plate: 'NAA-1234', cooperative: 'San Luis Transport Coop', type: 'Jeepney', driver: 'Mark Reyes', status: 'Active' },
-  { plate: 'NAA-1235', cooperative: 'San Fernando Coop', type: 'Van (UV)', driver: 'Ana Cruz', status: 'Active' },
-  { plate: 'NAA-1236', cooperative: 'San Luis Transport Coop', type: 'Jeepney', driver: 'Unassigned', status: 'Idle' }
-]
+interface FleetVehicle {
+  documentId: string
+  plate_number: string
+  vehicle_type: string
+  vehicle_status: string
+  cooperative?: { name: string }
+  driver?: { first_name: string; last_name: string }
+}
+
+const rawFleet = ref<FleetVehicle[]>([])
+const activeVehicleCount = ref(0)
+
+const fleet = computed(() =>
+  rawFleet.value.map(vehicle => ({
+    plate: vehicle.plate_number,
+    cooperative: vehicle.cooperative?.name ?? '—',
+    type: vehicle.vehicle_type,
+    driver: vehicle.driver ? `${vehicle.driver.first_name} ${vehicle.driver.last_name}` : 'Unassigned',
+    status: vehicle.vehicle_status === 'offline' ? 'Idle' : 'Active'
+  }))
+)
+
+async function loadFleet() {
+  try {
+    const response = await apiFetch<{ data: FleetVehicle[] }>('/api/vehicles', {
+      query: { populate: 'cooperative,driver' }
+    })
+    rawFleet.value = response.data
+  } catch {
+    rawFleet.value = []
+  }
+}
+
+async function loadActiveVehicleCount() {
+  try {
+    const response = await apiFetch<{ data: unknown[] }>('/api/live-vehicles')
+    activeVehicleCount.value = response.data.length
+  } catch {
+    activeVehicleCount.value = 0
+  }
+}
 
 function dispatchAlert() {
   toast.add({
@@ -29,6 +66,11 @@ function dispatchAlert() {
     color: 'success'
   })
 }
+
+onMounted(() => {
+  loadFleet()
+  loadActiveVehicleCount()
+})
 </script>
 
 <template>
@@ -40,7 +82,7 @@ function dispatchAlert() {
     />
 
     <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <PamanaStatCard label="Active vehicles" value="24" icon="i-lucide-bus-front" />
+      <PamanaStatCard label="Active vehicles" :value="activeVehicleCount" icon="i-lucide-bus-front" />
       <PamanaStatCard label="Passengers waiting" value="142" icon="i-lucide-users" />
       <PamanaStatCard label="Corridor status" value="Moderate" tone="amber" icon="i-lucide-activity" />
       <PamanaStatCard label="Active disruptions" value="1" tone="red" icon="i-lucide-triangle-alert" />
@@ -156,6 +198,6 @@ function dispatchAlert() {
       </UCard>
     </div>
 
-    <p class="mt-4 text-xs text-neutral-400">Command-center values are simulated prototype data.</p>
+    <p class="mt-4 text-xs text-neutral-400">Active vehicle count and Fleet & Driver Management are live. Supply table, AI insight, system parameters, and passenger reports remain simulated until the PAMANA intelligence models are connected.</p>
   </div>
 </template>

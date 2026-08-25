@@ -7,12 +7,46 @@ useHead({
   title: 'Trip History | PAMANA'
 })
 
-const trips = [
-  { time: '8:30 AM', route: 'San Luis Terminal → SM City San Fernando', passengers: 12, fare: 420 },
-  { time: '10:30 AM', route: 'SM City San Fernando → San Luis Terminal', passengers: 8, fare: 280 },
-  { time: '12:45 PM', route: 'San Luis Public Market → Robinsons San Fernando', passengers: 10, fare: 450 },
-  { time: '3:15 PM', route: 'Robinsons San Fernando → San Luis Public Market', passengers: 4, fare: 180 }
-]
+const { apiFetch } = useApi()
+
+interface CompletedTrip {
+  documentId: string
+  started_at: string
+  route?: { origin: string; destination: string }
+}
+
+const rawTrips = ref<CompletedTrip[]>([])
+
+const trips = computed(() =>
+  rawTrips.value.map(trip => ({
+    time: new Date(trip.started_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }),
+    route: trip.route ? `${trip.route.origin} → ${trip.route.destination}` : '—',
+    // Not tracked by the trip data model yet - shown as simulated in the disclaimer below.
+    passengers: '—',
+    fare: '—'
+  }))
+)
+
+const completedTripsCount = computed(() => rawTrips.value.length)
+
+async function loadTrips() {
+  try {
+    const response = await apiFetch<{ data: CompletedTrip[] }>('/api/trips', {
+      query: {
+        'filters[trip_status][$eq]': 'completed',
+        populate: 'route',
+        sort: 'started_at:desc'
+      }
+    })
+    rawTrips.value = response.data
+  } catch {
+    rawTrips.value = []
+  }
+}
+
+onMounted(() => {
+  loadTrips()
+})
 </script>
 
 <template>
@@ -21,7 +55,7 @@ const trips = [
 
     <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
       <PamanaStatCard label="Today's earnings" value="₱1,330" tone="lime" icon="i-lucide-wallet" />
-      <PamanaStatCard label="Completed trips" value="8" icon="i-lucide-route" />
+      <PamanaStatCard label="Completed trips" :value="completedTripsCount" icon="i-lucide-route" />
       <PamanaStatCard label="Online time" value="6h 25m" icon="i-lucide-clock" />
       <PamanaStatCard label="Passengers" value="36" icon="i-lucide-users" />
     </div>
@@ -43,7 +77,7 @@ const trips = [
               <td>{{ trip.time }}</td>
               <td class="font-medium">{{ trip.route }}</td>
               <td>{{ trip.passengers }}</td>
-              <td>₱{{ trip.fare.toFixed(2) }}</td>
+              <td>{{ trip.fare }}</td>
               <td><span class="pill bg-lime-300/15 text-lime-700">Completed</span></td>
             </tr>
           </tbody>
@@ -51,6 +85,6 @@ const trips = [
       </div>
     </UCard>
 
-    <p class="mt-4 text-xs text-neutral-400">Trip history is simulated prototype data.</p>
+    <p class="mt-4 text-xs text-neutral-400">Time, route, and completed-trip count are live. Earnings, online time, and passenger counts are simulated prototype data (not yet tracked).</p>
   </div>
 </template>
