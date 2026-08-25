@@ -9,11 +9,11 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Login | PAMANA'
+  title: 'Register | PAMANA'
 })
 
 const {
-  login,
+  register,
   redirectByRole,
   loading
 } = useAuth()
@@ -23,57 +23,74 @@ const toast = useToast()
 const showPassword = ref(false)
 
 const schema = z.object({
-  identifier: z
+  firstName: z
     .string()
-    .min(1, 'Email or username is required'),
+    .min(1, 'First name is required'),
+
+  lastName: z
+    .string()
+    .min(1, 'Last name is required'),
+
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters'),
+
+  email: z
+    .string()
+    .email('Enter a valid email address'),
+
+  contactNumber: z
+    .string()
+    .optional(),
 
   password: z
     .string()
-    .min(1, 'Password is required')
+    .min(6, 'Password must be at least 6 characters')
 })
 
 type Schema = z.output<typeof schema>
 
 const state = reactive<Schema>({
-  identifier: '',
+  firstName: '',
+  lastName: '',
+  username: '',
+  email: '',
+  contactNumber: '',
   password: ''
 })
 
-const getLoginErrorMessage = (error: any) => {
+const getRegisterErrorMessage = (error: any) => {
   const message =
     error?.data?.error?.message ||
     error?.statusMessage ||
     error?.message
 
-  if (
-    message === 'Invalid identifier or password' ||
-    error?.status === 400
-  ) {
-    return 'Invalid email, username, or password.'
+  if (message === 'Email or Username are already taken') {
+    return 'That email or username is already registered.'
   }
 
-  return 'Unable to sign in. Please try again.'
+  return message || 'Unable to create your account. Please try again.'
 }
 
 const onSubmit = async (
   event: FormSubmitEvent<Schema>
 ) => {
   try {
-    await login(event.data)
+    await register(event.data)
 
     toast.add({
-      title: 'Login successful',
+      title: 'Account created',
       description: 'Welcome to PAMANA.',
       color: 'success'
     })
 
     await redirectByRole()
   } catch (error) {
-    console.error('Login error:', error)
+    console.error('Registration error:', error)
 
     toast.add({
-      title: 'Login failed',
-      description: getLoginErrorMessage(error),
+      title: 'Registration failed',
+      description: getRegisterErrorMessage(error),
       color: 'error'
     })
   }
@@ -151,7 +168,7 @@ const onSubmit = async (
                 text-neutral-900
               "
             >
-              Sign in
+              Create a passenger account
             </h2>
 
             <p
@@ -161,7 +178,7 @@ const onSubmit = async (
                 text-neutral-500
               "
             >
-              Enter your PAMANA account credentials.
+              Register to plan trips and report conditions on PAMANA.
             </p>
           </div>
         </template>
@@ -172,16 +189,74 @@ const onSubmit = async (
           class="relative z-10 space-y-5"
           @submit="onSubmit"
         >
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField
+              label="First Name"
+              name="firstName"
+              required
+            >
+              <UInput
+                v-model="state.firstName"
+                placeholder="Juan"
+                size="lg"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField
+              label="Last Name"
+              name="lastName"
+              required
+            >
+              <UInput
+                v-model="state.lastName"
+                placeholder="Dela Cruz"
+                size="lg"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+
           <UFormField
-            label="Email or Username"
-            name="identifier"
+            label="Username"
+            name="username"
             required
           >
             <UInput
-              v-model="state.identifier"
-              placeholder="Enter your email or username"
+              v-model="state.username"
+              placeholder="Choose a username"
               icon="i-lucide-user"
               autocomplete="username"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            label="Email"
+            name="email"
+            required
+          >
+            <UInput
+              v-model="state.email"
+              type="email"
+              placeholder="Enter your email"
+              icon="i-lucide-mail"
+              autocomplete="email"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            label="Contact Number"
+            name="contactNumber"
+          >
+            <UInput
+              v-model="state.contactNumber"
+              placeholder="09XX XXX XXXX"
+              icon="i-lucide-phone"
+              autocomplete="tel"
               size="lg"
               class="w-full"
             />
@@ -195,9 +270,9 @@ const onSubmit = async (
             <UInput
               v-model="state.password"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Enter your password"
+              placeholder="Create a password"
               icon="i-lucide-lock"
-              autocomplete="current-password"
+              autocomplete="new-password"
               size="lg"
               class="w-full"
             >
@@ -231,7 +306,7 @@ const onSubmit = async (
             :loading="loading"
             :disabled="loading"
           >
-            Sign In
+            Create Account
           </UButton>
         </UForm>
       </UCard>
@@ -244,12 +319,12 @@ const onSubmit = async (
           text-neutral-500
         "
       >
-        New passenger?
+        Already have an account?
         <NuxtLink
-          to="/register"
+          to="/login"
           class="font-medium text-lime-600 hover:underline"
         >
-          Create an account
+          Sign in
         </NuxtLink>
       </p>
 

@@ -3,6 +3,7 @@ import type {
   LoginCredentials,
   LoginResponse,
   PamanaRole,
+  RegisterCredentials,
 } from "~/types/auth";
 
 import { PAMANA_ROLES, ROLE_HOME_ROUTES } from "~/utils/constants";
@@ -91,11 +92,6 @@ export const useAuth = () => {
     try {
       const currentUser = await apiFetch<AuthUser>(
         "/api/users/me?populate=role",
-        {
-          headers: {
-            Authorization: `Bearer ${token.value}`,
-          },
-        },
       );
 
       user.value = currentUser;
@@ -129,6 +125,55 @@ export const useAuth = () => {
       });
 
       saveToken(response.jwt);
+
+      await fetchMe();
+
+      return user.value;
+    } catch (error) {
+      removeStoredAuth();
+
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * REGISTER (Passenger self-service)
+   * ---------------------------------------------------------
+   */
+
+  const register = async (credentials: RegisterCredentials) => {
+    loading.value = true;
+
+    try {
+      const response = await apiFetch<LoginResponse>(
+        "/api/auth/local/register",
+        {
+          method: "POST",
+
+          body: {
+            username: credentials.username,
+            email: credentials.email,
+            password: credentials.password,
+          },
+        },
+      );
+
+      saveToken(response.jwt);
+
+      await apiFetch("/api/passenger-profiles", {
+        method: "POST",
+
+        body: {
+          data: {
+            first_name: credentials.firstName,
+            last_name: credentials.lastName,
+            contact_number: credentials.contactNumber || undefined,
+          },
+        },
+      });
 
       await fetchMe();
 
@@ -261,6 +306,7 @@ export const useAuth = () => {
     isAdministrator,
 
     login,
+    register,
     logout,
 
     fetchMe,

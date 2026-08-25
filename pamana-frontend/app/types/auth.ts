@@ -29,3 +29,20 @@ export interface LoginResponse {
   jwt: string
   user: AuthUser
 }
+
+export interface RegisterCredentials {
+  username: string
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  contactNumber?: string
+}
+
+export interface PassengerProfile {
+  id: number
+  documentId: string
+  first_name: string
+  last_name: string
+  contact_number?: string
+}
