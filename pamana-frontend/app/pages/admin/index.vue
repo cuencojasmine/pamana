@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { StrapiListResponse } from '~/types'
+
 definePageMeta({
   middleware: ['auth', 'admin']
 })
@@ -7,6 +9,7 @@ useHead({
   title: 'Administrator Dashboard | PAMANA'
 })
 
+const { apiFetch } = useApi()
 const { user, role } = useAuth()
 
 const quickLinks = [
@@ -14,6 +17,49 @@ const quickLinks = [
   { label: 'Manage vehicles', icon: 'i-lucide-bus-front', to: '/admin/vehicles' },
   { label: 'Manage users', icon: 'i-lucide-users', to: '/admin/users' }
 ]
+
+const counts = reactive({
+  routes: 0,
+  vehicles: 0,
+  drivers: 0,
+  cooperatives: 0
+})
+
+const stats = computed(() => [
+  { label: 'Active routes', value: counts.routes, icon: 'i-lucide-route' },
+  { label: 'Registered vehicles', value: counts.vehicles, icon: 'i-lucide-bus-front' },
+  { label: 'Drivers', value: counts.drivers, icon: 'i-lucide-id-card' },
+  { label: 'Cooperatives', value: counts.cooperatives, icon: 'i-lucide-building-2' }
+])
+
+async function loadCounts() {
+  const countOf = async (endpoint: string) => {
+    try {
+      const response = await apiFetch<StrapiListResponse<unknown>>(endpoint, {
+        query: { 'pagination[pageSize]': 1 }
+      })
+      return response.meta.pagination.total
+    } catch {
+      return 0
+    }
+  }
+
+  const [routes, vehicles, drivers, cooperatives] = await Promise.all([
+    countOf('/api/routes'),
+    countOf('/api/vehicles'),
+    countOf('/api/drivers'),
+    countOf('/api/cooperatives')
+  ])
+
+  counts.routes = routes
+  counts.vehicles = vehicles
+  counts.drivers = drivers
+  counts.cooperatives = cooperatives
+}
+
+onMounted(() => {
+  loadCounts()
+})
 </script>
 
 <template>
@@ -22,12 +68,7 @@ const quickLinks = [
 
     <div class="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
       <UCard
-        v-for="stat in [
-          { label: 'Active routes', value: 12, icon: 'i-lucide-route' },
-          { label: 'Registered vehicles', value: 24, icon: 'i-lucide-bus-front' },
-          { label: 'Drivers', value: 31, icon: 'i-lucide-id-card' },
-          { label: 'Cooperatives', value: 4, icon: 'i-lucide-building-2' }
-        ]"
+        v-for="stat in stats"
         :key="stat.label"
         class="glass glow-lime card-lift rounded-30"
         :ui="{ root: 'ring-0 rounded-30', body: 'relative z-10' }"
@@ -78,6 +119,6 @@ const quickLinks = [
       </UCard>
     </div>
 
-    <p class="mt-4 text-xs text-neutral-400">Summary counts are simulated until the dashboard aggregation endpoint is connected.</p>
+    <p class="mt-4 text-xs text-neutral-400">Summary counts are live from the transportation master data.</p>
   </div>
 </template>

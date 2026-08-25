@@ -7,16 +7,59 @@ useHead({
   title: 'Live Map | PAMANA'
 })
 
+const { apiFetch } = useApi()
+
 const nearbyStops = [
   { name: 'San Luis Central Terminal', wait: '3 min wait', tone: 'lime' },
   { name: 'Santo Tomas Stop', wait: '9 min wait', tone: 'amber' },
   { name: 'OGC Stop', wait: '5 min wait', tone: 'lime' }
 ]
 
-const vehicles = [
-  { id: 'DX-1087', occupancy: '12/16 seats', distance: '2 min away' },
-  { id: 'DX-1094', occupancy: '6/16 seats', distance: '5 min away' }
-]
+interface LiveVehicle {
+  vehicle_id: number
+  documentId: string
+  vehicle_number: string
+  occupancy_level: string | null
+  direction: string
+}
+
+const OCCUPANCY_LABELS: Record<string, string> = {
+  empty: 'Empty',
+  low: 'Low occupancy',
+  moderate: 'Moderate occupancy',
+  near_full: 'Near full',
+  full: 'Full'
+}
+
+const rawVehicles = ref<LiveVehicle[]>([])
+
+const vehicles = computed(() =>
+  rawVehicles.value.map(vehicle => ({
+    id: vehicle.vehicle_number,
+    occupancy: vehicle.occupancy_level ? OCCUPANCY_LABELS[vehicle.occupancy_level] ?? vehicle.occupancy_level : 'Unknown occupancy',
+    distance: vehicle.direction === 'inbound' ? 'Inbound' : 'Outbound'
+  }))
+)
+
+let pollTimer: ReturnType<typeof setInterval> | undefined
+
+async function loadNearbyVehicles() {
+  try {
+    const response = await apiFetch<{ data: LiveVehicle[] }>('/api/live-vehicles')
+    rawVehicles.value = response.data
+  } catch {
+    // Keep the last known list on a transient polling failure.
+  }
+}
+
+onMounted(() => {
+  loadNearbyVehicles()
+  pollTimer = setInterval(loadNearbyVehicles, 5000)
+})
+
+onUnmounted(() => {
+  if (pollTimer) clearInterval(pollTimer)
+})
 </script>
 
 <template>
@@ -90,7 +133,7 @@ const vehicles = [
         </UCard>
 
         <p class="px-2 text-xs leading-relaxed text-neutral-400">
-          Live GPS positions will appear here once the vehicle tracking feed is connected.
+          Active vehicle list is live. Map marker positions will appear here once Leaflet map rendering is connected.
         </p>
       </div>
     </div>

@@ -7,6 +7,7 @@ useHead({
   title: 'Driver Dashboard | PAMANA'
 })
 
+const { apiFetch } = useApi()
 const { user } = useAuth()
 const online = ref(true)
 
@@ -18,6 +19,56 @@ const quickActions = [
   { label: 'Report Issue', icon: 'i-lucide-triangle-alert', classes: 'text-amber-500' },
   { label: 'Emergency', icon: 'i-lucide-phone', classes: 'text-red-500' }
 ]
+
+interface ActiveTrip {
+  documentId: string
+  route?: { origin: string; destination: string; estimated_travel_time: number | null }
+  vehicle?: { capacity: number | null; occupancy_level: string | null }
+}
+
+const OCCUPANCY_LEVEL_RATIO: Record<string, number> = {
+  empty: 0,
+  low: 0.25,
+  moderate: 0.5,
+  near_full: 0.75,
+  full: 1
+}
+
+const activeTrip = ref<ActiveTrip | null>(null)
+
+const tripOrigin = computed(() => activeTrip.value?.route?.origin ?? '—')
+const tripDestination = computed(() => activeTrip.value?.route?.destination ?? '—')
+const tripEta = computed(() => {
+  const minutes = activeTrip.value?.route?.estimated_travel_time
+  return typeof minutes === 'number' ? `${minutes} min` : '—'
+})
+
+const vehicleCapacity = computed(() => activeTrip.value?.vehicle?.capacity ?? 0)
+const occupancyRatio = computed(() => {
+  const level = activeTrip.value?.vehicle?.occupancy_level
+  return level ? OCCUPANCY_LEVEL_RATIO[level] ?? 0 : 0
+})
+const occupancyCount = computed(() => Math.round(vehicleCapacity.value * occupancyRatio.value))
+const occupancyPercent = computed(() => Math.round(occupancyRatio.value * 100))
+
+async function loadActiveTrip() {
+  try {
+    const response = await apiFetch<{ data: ActiveTrip[] }>('/api/trips', {
+      query: {
+        'filters[trip_status][$eq]': 'active',
+        populate: 'vehicle,route'
+      }
+    })
+
+    activeTrip.value = response.data[0] ?? null
+  } catch {
+    activeTrip.value = null
+  }
+}
+
+onMounted(() => {
+  loadActiveTrip()
+})
 </script>
 
 <template>
@@ -45,33 +96,36 @@ const quickActions = [
       <UCard class="glass rounded-30 lg:col-span-2" :ui="{ root: 'ring-0 rounded-30' }">
         <div class="flex items-center justify-between gap-3">
           <h2 class="font-display text-sm font-semibold text-neutral-900">Current Trip</h2>
-          <span class="pill bg-teal-100 text-teal-700">Ongoing</span>
+          <span
+            class="pill"
+            :class="activeTrip ? 'bg-teal-100 text-teal-700' : 'bg-neutral-100 text-neutral-500'"
+          >{{ activeTrip ? 'Ongoing' : 'No active trip' }}</span>
         </div>
 
         <div class="mt-4 grid items-center gap-4 text-sm sm:grid-cols-[1fr_auto_1fr_auto]">
           <div>
             <p class="text-[11px] text-neutral-400">From</p>
-            <p class="font-medium text-neutral-900">San Luis Central Terminal</p>
+            <p class="font-medium text-neutral-900">{{ tripOrigin }}</p>
           </div>
           <UIcon name="i-lucide-arrow-right" class="hidden size-4 text-neutral-300 sm:block" />
           <div class="sm:text-right">
             <p class="text-[11px] text-neutral-400">To</p>
-            <p class="font-medium text-neutral-900">SM City San Fernando</p>
+            <p class="font-medium text-neutral-900">{{ tripDestination }}</p>
           </div>
           <div class="border-neutral-900/10 sm:border-l sm:pl-4 sm:text-right">
             <p class="text-[11px] text-neutral-400">ETA</p>
-            <p class="font-medium text-neutral-900">18 min</p>
+            <p class="font-medium text-neutral-900">{{ tripEta }}</p>
           </div>
         </div>
 
         <div class="mt-5 grid grid-cols-3 gap-2">
           <div class="rounded-xl bg-neutral-900/[0.035] px-3 py-2 text-center">
             <p class="text-[10px] text-neutral-400">Passengers</p>
-            <p class="stat-num text-sm">12</p>
+            <p class="stat-num text-sm">{{ activeTrip ? occupancyCount : '—' }}</p>
           </div>
           <div class="rounded-xl bg-neutral-900/[0.035] px-3 py-2 text-center">
             <p class="text-[10px] text-neutral-400">Trip time</p>
-            <p class="stat-num text-sm">22 min</p>
+            <p class="stat-num text-sm">{{ tripEta }}</p>
           </div>
           <div class="rounded-xl bg-lime-300/10 px-3 py-2 text-center">
             <p class="text-[10px] text-neutral-400">Collected fare</p>
@@ -83,11 +137,11 @@ const quickActions = [
       <UCard class="glass glow-lime rounded-30" :ui="{ root: 'ring-0 rounded-30', body: 'relative z-10' }">
         <h2 class="font-display text-sm font-semibold text-neutral-900">Vehicle Occupancy</h2>
         <p class="stat-num mt-3 text-3xl text-neutral-900">
-          12<span class="text-base font-medium text-neutral-400"> / 16 seats</span>
+          {{ occupancyCount }}<span class="text-base font-medium text-neutral-400"> / {{ vehicleCapacity }} seats</span>
         </p>
-        <p class="mt-1 text-xs text-neutral-400">75% occupied</p>
+        <p class="mt-1 text-xs text-neutral-400">{{ occupancyPercent }}% occupied</p>
         <div class="mt-4 h-2 w-full overflow-hidden rounded-full bg-neutral-900/[0.06]">
-          <div class="h-full w-3/4 bg-gradient-to-r from-lime-400 to-amber-500" />
+          <div class="h-full bg-gradient-to-r from-lime-400 to-amber-500" :style="{ width: `${occupancyPercent}%` }" />
         </div>
       </UCard>
     </div>
@@ -104,6 +158,6 @@ const quickActions = [
       </NuxtLink>
     </div>
 
-    <p class="mt-4 text-xs text-neutral-400">Operational figures shown are simulated prototype data.</p>
+    <p class="mt-4 text-xs text-neutral-400">Trip route, ETA, and occupancy are live. Collected fare is simulated prototype data.</p>
   </div>
 </template>

@@ -7,16 +7,47 @@ useHead({
   title: 'Live Mobility | PAMANA'
 })
 
+const { apiFetch } = useApi()
+
 const cooperative = ref('All cooperatives')
 const route = ref('All routes')
 
-const vehicles = [
-  { plate: 'NAA-1234', speed: '42 km/h', status: 'moving' },
-  { plate: 'NAA-1235', speed: '18 km/h', status: 'moving' },
-  { plate: 'NAA-1236', speed: 'Stopped', status: 'stopped' },
-  { plate: 'NAA-1240', speed: '35 km/h', status: 'moving' },
-  { plate: 'NAA-1242', speed: '28 km/h', status: 'moving' }
-]
+interface LiveVehicle {
+  vehicle_id: number
+  documentId: string
+  plate_number: string
+  speed: number | null
+}
+
+const rawVehicles = ref<LiveVehicle[]>([])
+
+const vehicles = computed(() =>
+  rawVehicles.value.map(vehicle => ({
+    plate: vehicle.plate_number,
+    speed: typeof vehicle.speed === 'number' && vehicle.speed > 0 ? `${vehicle.speed} km/h` : 'Stopped',
+    status: typeof vehicle.speed === 'number' && vehicle.speed > 0 ? 'moving' : 'stopped'
+  }))
+)
+
+let pollTimer: ReturnType<typeof setInterval> | undefined
+
+async function loadLiveVehicles() {
+  try {
+    const response = await apiFetch<{ data: LiveVehicle[] }>('/api/live-vehicles')
+    rawVehicles.value = response.data
+  } catch {
+    // Keep showing the last known list on a transient polling failure.
+  }
+}
+
+onMounted(() => {
+  loadLiveVehicles()
+  pollTimer = setInterval(loadLiveVehicles, 5000)
+})
+
+onUnmounted(() => {
+  if (pollTimer) clearInterval(pollTimer)
+})
 </script>
 
 <template>
@@ -49,7 +80,7 @@ const vehicles = [
       <UCard class="glass rounded-30" :ui="{ root: 'ring-0 rounded-30' }">
         <div class="flex items-center justify-between">
           <h2 class="font-display text-sm font-semibold text-neutral-900">Vehicles on corridor</h2>
-          <span class="pill bg-teal-100 text-teal-700">24 live</span>
+          <span class="pill bg-teal-100 text-teal-700">{{ vehicles.length }} live</span>
         </div>
 
         <div class="mt-4 max-h-[390px] divide-y divide-neutral-900/5 overflow-y-auto pr-1">
@@ -66,6 +97,6 @@ const vehicles = [
       </UCard>
     </div>
 
-    <p class="mt-4 text-xs text-neutral-400">Vehicle positions and speeds are simulated until live GPS telemetry is connected.</p>
+    <p class="mt-4 text-xs text-neutral-400">Vehicle list and speeds are live. Map marker positions are a simulated preview until Leaflet map rendering is connected.</p>
   </div>
 </template>

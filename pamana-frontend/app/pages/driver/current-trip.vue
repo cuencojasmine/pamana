@@ -7,9 +7,10 @@ useHead({
   title: 'Current Trip | PAMANA'
 })
 
+const { apiFetch } = useApi()
 const toast = useToast()
-const occupancy = ref(12)
-const capacity = 16
+const occupancy = ref(0)
+const capacity = ref(16)
 
 const stops = [
   { name: 'San Luis Central Terminal', detail: 'Departed 7:02 AM', state: 'done' },
@@ -18,17 +19,116 @@ const stops = [
   { name: 'SM City San Fernando', detail: '', state: 'pending' }
 ]
 
-function changeOccupancy(amount: number) {
-  occupancy.value = Math.min(capacity, Math.max(0, occupancy.value + amount))
+const activeTripDocumentId = ref<string | null>(null)
+const activeVehicleDocumentId = ref<string | null>(null)
+
+const OCCUPANCY_LEVEL_RATIO: Record<string, number> = {
+  empty: 0,
+  low: 0.25,
+  moderate: 0.5,
+  near_full: 0.75,
+  full: 1
 }
 
-function endTrip() {
-  toast.add({
-    title: 'End-trip control ready',
-    description: 'This prototype keeps the trip active until the driver trip endpoint is connected.',
-    color: 'warning'
-  })
+function occupancyLevelFor(current: number, max: number) {
+  if (current <= 0) return 'empty'
+
+  const ratio = current / max
+
+  if (ratio <= 0.4) return 'low'
+  if (ratio <= 0.65) return 'moderate'
+  if (ratio <= 0.9) return 'near_full'
+
+  return 'full'
 }
+
+async function loadActiveTrip() {
+  try {
+    const response = await apiFetch<{
+      data: Array<{
+        documentId: string
+        vehicle?: { documentId: string; capacity: number | null; occupancy_level: string | null }
+      }>
+    }>('/api/trips', {
+      query: {
+        'filters[trip_status][$eq]': 'active',
+        populate: 'vehicle'
+      }
+    })
+
+    const trip = response.data[0]
+    activeTripDocumentId.value = trip?.documentId ?? null
+    activeVehicleDocumentId.value = trip?.vehicle?.documentId ?? null
+
+    if (trip?.vehicle?.capacity) {
+      capacity.value = trip.vehicle.capacity
+    }
+
+    const level = trip?.vehicle?.occupancy_level
+    if (level) {
+      occupancy.value = Math.round(capacity.value * (OCCUPANCY_LEVEL_RATIO[level] ?? 0))
+    }
+  } catch {
+    activeTripDocumentId.value = null
+    activeVehicleDocumentId.value = null
+  }
+}
+
+async function changeOccupancy(amount: number) {
+  const next = Math.min(capacity.value, Math.max(0, occupancy.value + amount))
+  occupancy.value = next
+
+  if (!activeVehicleDocumentId.value) return
+
+  try {
+    await apiFetch(`/api/vehicles/${activeVehicleDocumentId.value}`, {
+      method: 'PUT',
+      body: { data: { occupancy_level: occupancyLevelFor(next, capacity.value) } }
+    })
+  } catch (error: any) {
+    toast.add({
+      title: 'Unable to update occupancy',
+      description: error?.data?.error?.message || 'Please try again.',
+      color: 'error'
+    })
+  }
+}
+
+async function endTrip() {
+  if (!activeTripDocumentId.value) {
+    toast.add({
+      title: 'No active trip found',
+      description: 'Start a trip before trying to end one.',
+      color: 'warning'
+    })
+    return
+  }
+
+  try {
+    await apiFetch(`/api/trips/${activeTripDocumentId.value}`, {
+      method: 'PUT',
+      body: { data: { trip_status: 'completed' } }
+    })
+
+    toast.add({
+      title: 'Trip ended',
+      description: 'The trip has been marked completed.',
+      color: 'success'
+    })
+
+    await navigateTo('/driver')
+  } catch (error: any) {
+    toast.add({
+      title: 'Unable to end trip',
+      description: error?.data?.error?.message || 'Please try again.',
+      color: 'error'
+    })
+  }
+}
+
+onMounted(() => {
+  loadActiveTrip()
+})
 </script>
 
 <template>

@@ -7,6 +7,9 @@ useHead({
   title: 'Trip Planner | PAMANA'
 })
 
+const { apiFetch } = useApi()
+const toast = useToast()
+
 const form = reactive({
   origin: 'San Luis',
   destination: 'San Fernando',
@@ -17,61 +20,32 @@ const form = reactive({
 const departureOptions = ['Depart now', 'Schedule for later']
 const vehicleOptions = ['All vehicle types', 'Jeepney only', 'Van (UV Express)']
 
-const allRoutes = [
-  {
-    documentId: 'preview-sl-sf-01',
-    route_name: 'San Luis – San Fernando 01',
-    route_code: 'SL–SF 01',
-    vehicle_type: 'Jeepney',
-    origin: 'San Luis Central Terminal',
-    destination: 'SM City San Fernando',
-    base_fare: 35,
-    estimated_travel_time: 22,
-    stops: [
-      { name: 'San Luis Central Terminal' },
-      { name: 'Santo Tomas Stop' },
-      { name: 'OGC Stop' },
-      { name: 'SM City San Fernando' }
-    ],
-    is_cheapest: true,
-    is_fastest: false,
-    is_recommended: true
-  },
-  {
-    documentId: 'preview-sl-sf-04',
-    route_name: 'San Luis – San Fernando 04',
-    route_code: 'SL–SF 04',
-    vehicle_type: 'Van (UV Express)',
-    origin: 'San Luis Public Market',
-    destination: 'Robinsons San Fernando',
-    base_fare: 45,
-    estimated_travel_time: 16,
-    stops: [
-      { name: 'San Luis Public Market' },
-      { name: 'Santo Tomas Junction' },
-      { name: 'Robinsons San Fernando' }
-    ],
-    is_cheapest: false,
-    is_fastest: true,
-    is_recommended: false
-  }
-]
+interface TripSearchStop {
+  id: number
+  name: string
+  sequence: number
+}
 
-const routes = computed(() => {
-  if (form.vehicle === 'Jeepney only') {
-    return allRoutes.filter(route => route.vehicle_type === 'Jeepney')
-  }
+interface TripSearchRoute {
+  id: number
+  documentId: string
+  route_name: string
+  route_code: string
+  vehicle_type?: string
+  origin: string
+  destination: string
+  base_fare: number | null
+  estimated_travel_time: number | null
+  is_cheapest: boolean
+  is_fastest: boolean
+  is_recommended: boolean
+  stops: TripSearchStop[]
+}
 
-  if (form.vehicle === 'Van (UV Express)') {
-    return allRoutes.filter(route => route.vehicle_type === 'Van (UV Express)')
-  }
-
-  return allRoutes
-})
-
-const selectedRouteId = ref<string | null>(allRoutes[0].documentId)
+const routes = ref<TripSearchRoute[]>([])
+const selectedRouteId = ref<string | null>(null)
 const loading = ref(false)
-const searched = ref(true)
+const searched = ref(false)
 
 const selectedRoute = computed(() =>
   routes.value.find(route => route.documentId === selectedRouteId.value) ?? routes.value[0]
@@ -94,10 +68,37 @@ function formatMoney(value: number) {
   return `₱${value.toFixed(2)}`
 }
 
-function searchRoutes() {
-  searched.value = true
-  selectedRouteId.value = routes.value[0]?.documentId ?? null
+async function searchRoutes() {
+  loading.value = true
+
+  try {
+    const response = await apiFetch<{ data: TripSearchRoute[] }>('/api/trip-search', {
+      query: {
+        origin: form.origin,
+        destination: form.destination
+      }
+    })
+
+    routes.value = response.data
+    selectedRouteId.value = response.data[0]?.documentId ?? null
+  } catch (error: any) {
+    routes.value = []
+    selectedRouteId.value = null
+
+    toast.add({
+      title: 'Unable to search routes',
+      description: error?.data?.error?.message || 'Please try again.',
+      color: 'error'
+    })
+  } finally {
+    searched.value = true
+    loading.value = false
+  }
 }
+
+onMounted(() => {
+  searchRoutes()
+})
 </script>
 
 <template>
@@ -245,7 +246,7 @@ function searchRoutes() {
         />
 
         <p class="text-xs text-neutral-400">
-          Route options and map markers are simulated UI preview data only.
+          Route options are live. Map markers are simulated UI preview data only.
         </p>
       </div>
     </div>
