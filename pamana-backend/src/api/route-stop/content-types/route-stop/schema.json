@@ -21,11 +21,11 @@
       "min": 1
     },
     "latitude": {
-      "type": "decimal",
+      "type": "float",
       "required": true
     },
     "longitude": {
-      "type": "decimal",
+      "type": "float",
       "required": true
     },
     "stop_type": {

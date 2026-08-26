@@ -500,14 +500,14 @@ export interface ApiDisruptionDisruption extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'active'>;
     ends_at: Schema.Attribute.DateTime;
-    latitude: Schema.Attribute.Decimal;
+    latitude: Schema.Attribute.Float;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::disruption.disruption'
     > &
       Schema.Attribute.Private;
-    longitude: Schema.Attribute.Decimal;
+    longitude: Schema.Attribute.Float;
     publishedAt: Schema.Attribute.DateTime;
     severity: Schema.Attribute.Enumeration<
       ['low', 'moderate', 'high', 'critical']
@@ -682,7 +682,7 @@ export interface ApiPassengerReportPassengerReport
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    latitude: Schema.Attribute.Decimal;
+    latitude: Schema.Attribute.Float;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -690,7 +690,7 @@ export interface ApiPassengerReportPassengerReport
     > &
       Schema.Attribute.Private;
     location_note: Schema.Attribute.String;
-    longitude: Schema.Attribute.Decimal;
+    longitude: Schema.Attribute.Float;
     passenger: Schema.Attribute.Relation<
       'manyToOne',
       'api::passenger-profile.passenger-profile'
@@ -775,14 +775,14 @@ export interface ApiRouteStopRouteStop extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    latitude: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    latitude: Schema.Attribute.Float & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::route-stop.route-stop'
     > &
       Schema.Attribute.Private;
-    longitude: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    longitude: Schema.Attribute.Float & Schema.Attribute.Required;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     passenger_demand_observations: Schema.Attribute.Relation<
       'oneToMany',
@@ -938,14 +938,14 @@ export interface ApiVehicleLocationVehicleLocation
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     heading: Schema.Attribute.Decimal;
-    latitude: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    latitude: Schema.Attribute.Float & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::vehicle-location.vehicle-location'
     > &
       Schema.Attribute.Private;
-    longitude: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    longitude: Schema.Attribute.Float & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     recorded_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
     speed: Schema.Attribute.Decimal;

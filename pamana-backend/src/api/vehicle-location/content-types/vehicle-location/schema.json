@@ -12,11 +12,11 @@
   "pluginOptions": {},
   "attributes": {
     "latitude": {
-      "type": "decimal",
+      "type": "float",
       "required": true
     },
     "longitude": {
-      "type": "decimal",
+      "type": "float",
       "required": true
     },
     "speed": {
