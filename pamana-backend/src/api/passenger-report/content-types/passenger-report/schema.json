@@ -24,10 +24,10 @@
       ]
     },
     "latitude": {
-      "type": "decimal"
+      "type": "float"
     },
     "longitude": {
-      "type": "decimal"
+      "type": "float"
     },
     "location_note": {
       "type": "string"

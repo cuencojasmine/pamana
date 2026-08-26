@@ -31,10 +31,10 @@
       "type": "text"
     },
     "latitude": {
-      "type": "decimal"
+      "type": "float"
     },
     "longitude": {
-      "type": "decimal"
+      "type": "float"
     },
     "severity": {
       "type": "enumeration",

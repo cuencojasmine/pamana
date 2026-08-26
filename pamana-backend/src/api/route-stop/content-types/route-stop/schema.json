@@ -21,11 +21,11 @@
       "min": 1
     },
     "latitude": {
-      "type": "decimal",
+      "type": "float",
       "required": true
     },
     "longitude": {
-      "type": "decimal",
+      "type": "float",
       "required": true
     },
     "stop_type": {
@@ -36,6 +36,16 @@
         "both",
         "terminal"
       ]
+    },
+    "covered_waiting_area": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "accessible_toilet_nearby": {
+      "type": "boolean",
+      "required": true,
+      "default": false
     },
     "route": {
       "type": "relation",

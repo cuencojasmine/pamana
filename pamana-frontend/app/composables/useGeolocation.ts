@@ -42,16 +42,39 @@ export function useGeolocation() {
 
         error.value = null
         loading.value = false
+
+        if (import.meta.dev) {
+          // eslint-disable-next-line no-console
+          console.log('[useGeolocation] position update', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          })
+        }
       },
       geolocationError => {
         error.value = geolocationError.message
         loading.value = false
+
+        if (import.meta.dev) {
+          // eslint-disable-next-line no-console
+          console.log('[useGeolocation] error', {
+            code: geolocationError.code,
+            message: geolocationError.message
+          })
+        }
       },
+<<<<<<< HEAD
       {
         enableHighAccuracy: false,
         maximumAge: 60000,
         timeout: 8000
       }
+=======
+      // maximumAge: 0 forces a fresh fix on every request instead of reusing a
+      // cached browser position - relevant while diagnosing accuracy issues.
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+>>>>>>> fe19b90e7ddd945536080c35c01f24fbb1de146b
     )
   }
 
