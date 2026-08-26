@@ -1,26 +1,45 @@
 export function useGeolocation() {
-  const location = useState<{ lat: number; lng: number } | null>('user-location', () => null)
-  const error = useState<string | null>('user-location-error', () => null)
-  const loading = useState<boolean>('user-location-loading', () => false)
-  const watchId = useState<number | null>('user-location-watch-id', () => null)
+  const location = useState<{ lat: number; lng: number } | null>(
+    'user-location',
+    () => null
+  )
+
+  const error = useState<string | null>(
+    'user-location-error',
+    () => null
+  )
+
+  const loading = useState<boolean>(
+    'user-location-loading',
+    () => false
+  )
+
+  const requested = useState<boolean>(
+    'user-location-requested',
+    () => false
+  )
 
   function start() {
-    if (!import.meta.client || !navigator.geolocation) {
+    if (!import.meta.client) return
+
+    if (!navigator.geolocation) {
       error.value = 'Geolocation is not supported by this browser.'
       return
     }
 
-    // The composable is used by the app shell and multiple map pages. Keep one
-    // browser watcher so navigation never causes duplicate permission prompts.
-    if (watchId.value !== null) return
+    // Prevent several map components from requesting location repeatedly.
+    if (requested.value) return
 
+    requested.value = true
     loading.value = true
-    watchId.value = navigator.geolocation.watchPosition(
+
+    navigator.geolocation.getCurrentPosition(
       position => {
         location.value = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         }
+
         error.value = null
         loading.value = false
       },
@@ -28,18 +47,20 @@ export function useGeolocation() {
         error.value = geolocationError.message
         loading.value = false
       },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      {
+        enableHighAccuracy: false,
+        maximumAge: 60000,
+        timeout: 8000
+      }
     )
-  }
-
-  function stop() {
-    if (watchId.value !== null && import.meta.client) {
-      navigator.geolocation.clearWatch(watchId.value)
-      watchId.value = null
-    }
   }
 
   onMounted(start)
 
-  return { location, error, loading, start, stop }
+  return {
+    location,
+    error,
+    loading,
+    start
+  }
 }
