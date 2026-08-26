@@ -138,6 +138,7 @@ module.exports = {
       ...route,
       predicted_wait_minutes: waitTimes[i].predicted_wait_minutes,
       wait_confidence: waitTimes[i].confidence,
+      wait_availability: waitTimes[i].availability_class,
     }));
 
     results = withRecommendedScore(results);

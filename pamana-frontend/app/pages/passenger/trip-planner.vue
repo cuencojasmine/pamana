@@ -52,7 +52,11 @@ interface TripSearchRoute {
   estimated_travel_time: number | null
   is_cheapest: boolean
   is_fastest: boolean
+  is_most_reliable: boolean
   is_recommended: boolean
+  predicted_wait_minutes: { low: number; high: number } | null
+  wait_availability: string | null
+  recommendation_reason: string | null
   stops: TripSearchStop[]
 }
 
@@ -500,6 +504,13 @@ onMounted(() => {
                   >
                     Fastest
                   </span>
+
+                  <span
+                    v-if="route.is_most_reliable"
+                    class="pill bg-sky-100 text-sky-700"
+                  >
+                    Most Reliable
+                  </span>
                 </div>
 
                 <p class="mt-1 text-xs text-neutral-500">
@@ -507,6 +518,22 @@ onMounted(() => {
                   {{ route.destination }} ·
                   {{ route.stops?.length ?? 0 }} stops ·
                   {{ route.vehicle_type || 'Vehicle not specified' }}
+                </p>
+
+                <p
+                  v-if="route.predicted_wait_minutes"
+                  class="mt-1 flex items-center gap-1 text-xs text-neutral-500"
+                >
+                  <UIcon name="i-lucide-clock" class="size-3.5 text-lime-600" />
+                  Predicted wait: {{ route.predicted_wait_minutes.low }}–{{ route.predicted_wait_minutes.high }} min
+                  <span v-if="route.wait_availability">· {{ route.wait_availability }} availability</span>
+                </p>
+
+                <p
+                  v-if="route.is_recommended && route.recommendation_reason"
+                  class="mt-1.5 text-xs leading-relaxed text-lime-700"
+                >
+                  {{ route.recommendation_reason }}
                 </p>
               </div>
             </div>
