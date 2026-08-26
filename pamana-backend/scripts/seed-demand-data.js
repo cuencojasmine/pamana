@@ -19,6 +19,7 @@
  */
 
 const { Client } = require('pg');
+const { timeSlotForHour: timeSlotFor } = require('../src/services/pamana-ai/time-slots');
 
 const ROUTE_ID = 2; // San Luis - San Fernando (SL-SF-01)
 const SEED_DATES = ['2026-08-25', '2026-08-26', '2026-08-27'];
@@ -44,11 +45,6 @@ const STOP_BASE_DEMAND = {
   'OGC Stop': 10,
   'SM City San Fernando': 22,
 };
-
-function timeSlotFor(hour) {
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${pad(hour)}:00-${pad(hour + 1)}:00`;
-}
 
 function genId() {
   return require('crypto').randomBytes(16).toString('hex').slice(0, 24);
