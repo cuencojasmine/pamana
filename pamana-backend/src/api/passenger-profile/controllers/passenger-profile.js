@@ -95,11 +95,20 @@ module.exports = createCoreController(
     },
 
     async find(ctx) {
+      // Filtering by the `user` relation directly hits Strapi's restricted-
+      // relations check (the Passenger role has no `find` permission on the
+      // users-permissions user content-type) - same class of issue worked
+      // around in trip.js. Resolve the caller's own profile id server-side
+      // first, then filter by `id`, a plain scalar field.
+      const profile = await strapi
+        .documents('api::passenger-profile.passenger-profile')
+        .findFirst({ filters: { user: { id: ctx.state.user.id } }, fields: ['id'] });
+
       ctx.query = {
         ...ctx.query,
         filters: {
           ...(ctx.query.filters || {}),
-          user: { id: ctx.state.user.id },
+          id: { $in: profile ? [profile.id] : [-1] },
         },
       };
 
