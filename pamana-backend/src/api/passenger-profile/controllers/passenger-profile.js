@@ -2,9 +2,42 @@
 
 /**
  * passenger-profile controller
+ *
+ * accessibility_preferences is a free-form Strapi `json` field, so it has
+ * no schema-level shape - validated and normalized here instead. It always
+ * stores all four known keys as explicit booleans (never null/missing), so
+ * a future consumer (Phase 17's recommendation engine) never has to treat
+ * an absent key as "confirmed accessible" - absent always means false.
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
+
+const ACCESSIBILITY_KEYS = ['pwd', 'senior_citizen', 'minimize_walking', 'fewer_transfers'];
+
+const defaultAccessibilityPreferences = () =>
+  ACCESSIBILITY_KEYS.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+
+const validateAccessibilityPreferences = (input) => {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    throw new Error('"accessibility_preferences" must be an object.');
+  }
+
+  const unknownKeys = Object.keys(input).filter((key) => !ACCESSIBILITY_KEYS.includes(key));
+
+  if (unknownKeys.length > 0) {
+    throw new Error(
+      `Unknown accessibility_preferences key(s): ${unknownKeys.join(', ')}. Allowed: ${ACCESSIBILITY_KEYS.join(', ')}.`
+    );
+  }
+
+  for (const key of ACCESSIBILITY_KEYS) {
+    if (key in input && typeof input[key] !== 'boolean') {
+      throw new Error(`"accessibility_preferences.${key}" must be a boolean.`);
+    }
+  }
+
+  return input;
+};
 
 module.exports = createCoreController(
   'api::passenger-profile.passenger-profile',
@@ -22,6 +55,22 @@ module.exports = createCoreController(
 
       if (ctx.request.body.data) {
         delete ctx.request.body.data.user;
+
+        if ('accessibility_preferences' in ctx.request.body.data) {
+          try {
+            const provided = validateAccessibilityPreferences(
+              ctx.request.body.data.accessibility_preferences
+            );
+            ctx.request.body.data.accessibility_preferences = {
+              ...defaultAccessibilityPreferences(),
+              ...provided,
+            };
+          } catch (err) {
+            return ctx.badRequest(err.message);
+          }
+        } else {
+          ctx.request.body.data.accessibility_preferences = defaultAccessibilityPreferences();
+        }
       }
 
       const result = await super.create(ctx);
@@ -80,6 +129,25 @@ module.exports = createCoreController(
 
       if (ctx.request.body.data) {
         delete ctx.request.body.data.user;
+
+        if ('accessibility_preferences' in ctx.request.body.data) {
+          try {
+            const provided = validateAccessibilityPreferences(
+              ctx.request.body.data.accessibility_preferences
+            );
+            const current =
+              profile.accessibility_preferences && typeof profile.accessibility_preferences === 'object'
+                ? profile.accessibility_preferences
+                : {};
+            ctx.request.body.data.accessibility_preferences = {
+              ...defaultAccessibilityPreferences(),
+              ...current,
+              ...provided,
+            };
+          } catch (err) {
+            return ctx.badRequest(err.message);
+          }
+        }
       }
 
       return super.update(ctx);

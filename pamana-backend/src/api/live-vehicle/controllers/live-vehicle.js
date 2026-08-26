@@ -48,6 +48,8 @@ module.exports = {
           vehicle_type: trip.vehicle.vehicle_type,
           vehicle_status: trip.vehicle.vehicle_status,
           occupancy_level: trip.vehicle.occupancy_level,
+          wheelchair_accessible: trip.vehicle.wheelchair_accessible,
+          low_floor: trip.vehicle.low_floor,
           route: {
             id: trip.route.id,
             route_name: trip.route.route_name,

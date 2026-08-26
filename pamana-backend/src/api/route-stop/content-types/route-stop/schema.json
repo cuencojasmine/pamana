@@ -37,6 +37,16 @@
         "terminal"
       ]
     },
+    "covered_waiting_area": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "accessible_toilet_nearby": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
     "route": {
       "type": "relation",
       "relation": "manyToOne",

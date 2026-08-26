@@ -54,6 +54,16 @@
         "offline"
       ]
     },
+    "wheelchair_accessible": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "low_floor": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
     "route": {
       "type": "relation",
       "relation": "manyToOne",

@@ -772,6 +772,12 @@ export interface ApiRouteStopRouteStop extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    accessible_toilet_nearby: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+    covered_waiting_area: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -999,6 +1005,9 @@ export interface ApiVehicleVehicle extends Struct.CollectionTypeSchema {
       'api::vehicle.vehicle'
     > &
       Schema.Attribute.Private;
+    low_floor: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
     occupancy_level: Schema.Attribute.Enumeration<
       ['empty', 'low', 'moderate', 'near_full', 'full']
     >;
@@ -1027,6 +1036,9 @@ export interface ApiVehicleVehicle extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Required;
     vehicle_type: Schema.Attribute.String & Schema.Attribute.Required;
+    wheelchair_accessible: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
   };
 }
 

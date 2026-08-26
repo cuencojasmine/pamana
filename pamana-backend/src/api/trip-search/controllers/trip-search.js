@@ -78,6 +78,8 @@ module.exports = {
           latitude: stop.latitude,
           longitude: stop.longitude,
           stop_type: stop.stop_type,
+          covered_waiting_area: stop.covered_waiting_area,
+          accessible_toilet_nearby: stop.accessible_toilet_nearby,
         }));
 
       return {
