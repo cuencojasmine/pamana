@@ -47,7 +47,7 @@ function clearLayers() {
   userMarker = null
 }
 
-async function renderMap() {
+async function renderMap(fitToBounds: boolean) {
   if (!map) return
   const L = await import('leaflet')
 
@@ -89,7 +89,12 @@ async function renderMap() {
     bounds.push(point)
   }
 
-  if (bounds.length) {
+  // Marker/route layers redraw on every data refresh (vehicle polling, GPS
+  // watch updates), but the view itself should only auto-fit on first load
+  // and the moment the user's location first arrives - never on every
+  // subsequent poll, or the map would keep yanking itself back under
+  // anyone who has manually panned/zoomed.
+  if (fitToBounds && bounds.length) {
     map.fitBounds(bounds, { padding: [32, 32], maxZoom: 15 })
   }
 }
@@ -114,12 +119,19 @@ onMounted(async () => {
   ).addTo(map)
 
   emit('ready', map)
-  await renderMap()
+  await renderMap(true)
 })
+
+let hadUserLocation = !!props.userLocation
 
 watch(
   () => [props.markers, props.routePoints, props.userLocation],
-  () => renderMap(),
+  () => {
+    const hasUserLocation = !!props.userLocation
+    const justArrived = !hadUserLocation && hasUserLocation
+    hadUserLocation = hasUserLocation
+    renderMap(justArrived)
+  },
   { deep: true }
 )
 

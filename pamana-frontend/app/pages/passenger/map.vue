@@ -8,7 +8,14 @@ useHead({
 })
 
 const { apiFetch } = useApi()
-const { location: userLocation } = useGeolocation()
+const { location: userLocation, error: locationError, loading: locationLoading } = useGeolocation()
+
+const locationStatusLabel = computed(() => {
+  if (userLocation.value) return 'Centered on your location'
+  if (locationError.value) return 'Location unavailable'
+  if (locationLoading.value) return 'Locating…'
+  return 'Pilot corridor'
+})
 
 const nearbyStops = [
   { name: 'San Luis Central Terminal', wait: '3 min wait', tone: 'lime' },
@@ -98,7 +105,7 @@ onUnmounted(() => {
 
         <span class="pointer-events-none absolute right-4 bottom-4 z-20 glass-solid pill normal-case text-neutral-700">
           <UIcon name="i-lucide-crosshair" class="size-3.5 text-lime-600" />
-          {{ userLocation ? 'Centered on your location' : 'Pilot corridor' }}
+          {{ locationStatusLabel }}
         </span>
       </PamanaMapPanel>
 

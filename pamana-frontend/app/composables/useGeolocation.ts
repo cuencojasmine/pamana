@@ -23,12 +23,31 @@ export function useGeolocation() {
         }
         error.value = null
         loading.value = false
+
+        if (import.meta.dev) {
+          // eslint-disable-next-line no-console
+          console.log('[useGeolocation] position update', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          })
+        }
       },
       geolocationError => {
         error.value = geolocationError.message
         loading.value = false
+
+        if (import.meta.dev) {
+          // eslint-disable-next-line no-console
+          console.log('[useGeolocation] error', {
+            code: geolocationError.code,
+            message: geolocationError.message
+          })
+        }
       },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      // maximumAge: 0 forces a fresh fix on every request instead of reusing a
+      // cached browser position - relevant while diagnosing accuracy issues.
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
     )
   }
 
