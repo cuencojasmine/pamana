@@ -76,23 +76,32 @@ module.exports = {
       return ctx.badRequest('Both "origin" and "destination" query parameters are required.');
     }
 
-    const routes = await strapi.documents('api::route.route').findMany({
-      filters: {
-        route_status: 'active',
-        $or: [
-          { origin: { $containsi: origin }, destination: { $containsi: destination } },
-          { origin: { $containsi: destination }, destination: { $containsi: origin } },
-        ],
-      },
+    // Bidirectional, case-insensitive substring match done in memory rather
+    // than via $containsi: a location picker can send a more specific string
+    // than what's stored (e.g. "San Luis, Pampanga" vs. the stored "San
+    // Luis") - $containsi only ever checks one direction, so a more specific
+    // search string could never match. Fine at this pilot's route count.
+    const matches = (storedValue, searchValue) => {
+      const stored = String(storedValue).toLowerCase().trim();
+      const search = String(searchValue).toLowerCase().trim();
+      return stored.includes(search) || search.includes(stored);
+    };
+
+    const allActiveRoutes = await strapi.documents('api::route.route').findMany({
+      filters: { route_status: 'active' },
       populate: {
         route_stops: true,
       },
     });
 
+    const routes = allActiveRoutes.filter(
+      (route) =>
+        (matches(route.origin, origin) && matches(route.destination, destination)) ||
+        (matches(route.origin, destination) && matches(route.destination, origin))
+    );
+
     let results = routes.map((route) => {
-      const isReverse =
-        route.destination.toLowerCase().includes(String(origin).toLowerCase()) &&
-        route.origin.toLowerCase().includes(String(destination).toLowerCase());
+      const isReverse = matches(route.destination, origin) && matches(route.origin, destination);
 
       const stops = (route.route_stops || [])
         .slice()

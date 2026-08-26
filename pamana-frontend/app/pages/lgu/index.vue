@@ -10,12 +10,82 @@ useHead({
 const { apiFetch } = useApi()
 const toast = useToast()
 
-const stops = [
-  { name: 'Adquisian', sequence: 1, expected: 320, wait: '10 min', status: 'Adequate' },
-  { name: 'San Luis Central Terminal', sequence: 2, expected: 305, wait: '10 min', status: 'Adequate' },
-  { name: 'Santo Tomas Stop', sequence: 3, expected: 400, wait: '15 min', status: 'Shortage' },
-  { name: 'OGC Stop', sequence: 4, expected: 220, wait: '12 min', status: 'Shortage' }
-]
+interface DashboardStop {
+  stop_name: string
+  expected_passengers: number | null
+  demand_class: string | null
+  status: 'ADEQUATE' | 'MONITOR' | 'SHORTAGE' | 'UNKNOWN'
+}
+
+interface DashboardSummary {
+  wait_time: { predicted_wait_minutes: { low: number; high: number } | null }
+  stops: DashboardStop[]
+  shortage_count: number
+  recommendations: { stop_name: string; message: string }[]
+}
+
+const dashboard = ref<DashboardSummary | null>(null)
+
+const STATUS_LABEL: Record<string, string> = {
+  ADEQUATE: 'Adequate',
+  MONITOR: 'Monitor',
+  SHORTAGE: 'Shortage',
+  UNKNOWN: 'No data'
+}
+
+const stops = computed(() =>
+  (dashboard.value?.stops ?? []).map((stop, index) => ({
+    name: stop.stop_name,
+    sequence: index + 1,
+    expected: stop.expected_passengers,
+    wait: dashboard.value?.wait_time.predicted_wait_minutes
+      ? `${dashboard.value.wait_time.predicted_wait_minutes.low}-${dashboard.value.wait_time.predicted_wait_minutes.high} min`
+      : '—',
+    status: STATUS_LABEL[stop.status] ?? 'No data',
+    rawStatus: stop.status
+  }))
+)
+
+const totalExpectedPassengers = computed(() => {
+  const values = (dashboard.value?.stops ?? [])
+    .map(s => s.expected_passengers)
+    .filter((v): v is number => typeof v === 'number')
+  return values.length ? values.reduce((sum, v) => sum + v, 0) : null
+})
+
+const corridorStatus = computed(() => {
+  const stopList = dashboard.value?.stops ?? []
+  if (stopList.some(s => s.status === 'SHORTAGE')) return { label: 'Critical', tone: 'red' as const }
+  if (stopList.some(s => s.status === 'MONITOR')) return { label: 'Moderate', tone: 'amber' as const }
+  if (stopList.length === 0) return { label: 'No data', tone: 'neutral' as const }
+  return { label: 'Adequate', tone: 'lime' as const }
+})
+
+const aiInsight = computed(() => {
+  const first = dashboard.value?.recommendations?.[0]
+  if (first) return first.message
+  if (dashboard.value) return 'No shortages predicted right now — corridor supply looks adequate at every stop.'
+  return 'Loading prediction data…'
+})
+
+const previewHour = ref(String(new Date().getHours()))
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, h) => ({
+  label: `${String(h).padStart(2, '0')}:00`,
+  value: String(h)
+}))
+
+async function loadDashboard() {
+  try {
+    const response = await apiFetch<{ data: DashboardSummary }>('/api/pamana-ai/dashboard-summary', {
+      query: { hour: previewHour.value }
+    })
+    dashboard.value = response.data
+  } catch {
+    dashboard.value = null
+  }
+}
+
+watch(previewHour, loadDashboard)
 
 interface FleetVehicle {
   documentId: string
@@ -70,6 +140,7 @@ function dispatchAlert() {
 onMounted(() => {
   loadFleet()
   loadActiveVehicleCount()
+  loadDashboard()
 })
 </script>
 
@@ -83,8 +154,8 @@ onMounted(() => {
 
     <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
       <PamanaStatCard label="Active vehicles" :value="activeVehicleCount" icon="i-lucide-bus-front" />
-      <PamanaStatCard label="Passengers waiting" value="142" icon="i-lucide-users" />
-      <PamanaStatCard label="Corridor status" value="Moderate" tone="amber" icon="i-lucide-activity" />
+      <PamanaStatCard label="Passengers waiting" :value="totalExpectedPassengers ?? '—'" icon="i-lucide-users" />
+      <PamanaStatCard label="Corridor status" :value="corridorStatus.label" :tone="corridorStatus.tone" icon="i-lucide-activity" />
       <PamanaStatCard label="Active disruptions" value="1" tone="red" icon="i-lucide-triangle-alert" />
     </div>
 
@@ -92,10 +163,14 @@ onMounted(() => {
       <UCard class="glass rounded-30 lg:col-span-2" :ui="{ root: 'ring-0 rounded-30' }">
         <div class="flex items-center justify-between gap-3">
           <h2 class="font-display text-sm font-semibold text-neutral-900">Stop-by-Stop Supply Table</h2>
-          <span class="flex size-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700">
-            <UIcon name="i-lucide-map" class="size-4" />
-          </span>
+          <div class="flex items-center gap-2">
+            <USelect v-model="previewHour" :items="HOUR_OPTIONS" class="w-28" />
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-teal-100 text-teal-700">
+              <UIcon name="i-lucide-map" class="size-4" />
+            </span>
+          </div>
         </div>
+        <p class="mt-1 text-xs text-neutral-400">Predicted demand for the selected hour — defaults to now.</p>
 
         <PamanaMapPanel class="mt-4" icon="i-lucide-map" label="Corridor supply overview" height="160px" tone="teal" />
 
@@ -119,7 +194,12 @@ onMounted(() => {
                 <td>
                   <span
                     class="pill"
-                    :class="stop.status === 'Adequate' ? 'bg-lime-300/15 text-lime-700' : 'bg-amber-100 text-amber-700'"
+                    :class="{
+                      'bg-lime-300/15 text-lime-700': stop.rawStatus === 'ADEQUATE',
+                      'bg-amber-100 text-amber-700': stop.rawStatus === 'MONITOR',
+                      'bg-red-100 text-red-600': stop.rawStatus === 'SHORTAGE',
+                      'bg-neutral-100 text-neutral-500': stop.rawStatus === 'UNKNOWN'
+                    }"
                   >
                     {{ stop.status }}
                   </span>
@@ -137,7 +217,7 @@ onMounted(() => {
             PAMANA AI Insight
           </h2>
           <p class="mt-3 text-xs leading-relaxed text-neutral-500">
-            Predicted passenger surge at San Luis Terminal, 7:00–8:00 AM. Recommend dispatching 3 additional vehicles and alerting cooperatives.
+            {{ aiInsight }}
           </p>
           <UButton block class="mt-4 rounded-full text-xs font-semibold text-neutral-950" @click="dispatchAlert">
             Dispatch Alert to Cooperative
@@ -198,6 +278,6 @@ onMounted(() => {
       </UCard>
     </div>
 
-    <p class="mt-4 text-xs text-neutral-400">Active vehicle count and Fleet & Driver Management are live. Supply table, AI insight, system parameters, and passenger reports remain simulated until the PAMANA intelligence models are connected.</p>
+    <p class="mt-4 text-xs text-neutral-400">Active vehicle count, Fleet & Driver Management, the Supply Table, and AI Insight are live from PAMANA's prediction models (built on seeded demo data for the pilot corridor). System parameters and passenger reports remain simulated.</p>
   </div>
 </template>

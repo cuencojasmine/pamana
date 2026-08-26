@@ -15,12 +15,30 @@ const { predictDemand } = require('../../../services/pamana-ai/demand');
 const { analyzeSupplyDemand } = require('../../../services/pamana-ai/supply-demand');
 
 async function resolveRouteId(strapi, routeParam) {
-  if (!routeParam) return null;
-  const route = await strapi.documents('api::route.route').findFirst({
-    filters: { documentId: routeParam },
+  if (routeParam) {
+    const route = await strapi.documents('api::route.route').findFirst({
+      filters: { documentId: routeParam },
+      fields: ['id'],
+    });
+    return route ? route.id : null;
+  }
+
+  // Single-corridor pilot: no route given just means "the corridor." Match
+  // by route_code specifically, not just "first active route" - the DB
+  // also has a leftover "Authentication Test Route" that's active too and
+  // would otherwise win a plain id-order tiebreak.
+  const pilotRoute = await strapi.documents('api::route.route').findFirst({
+    filters: { route_code: 'SL-SF-01', route_status: 'active' },
     fields: ['id'],
   });
-  return route ? route.id : null;
+  if (pilotRoute) return pilotRoute.id;
+
+  const anyActiveRoute = await strapi.documents('api::route.route').findFirst({
+    filters: { route_status: 'active' },
+    sort: ['id:asc'],
+    fields: ['id'],
+  });
+  return anyActiveRoute ? anyActiveRoute.id : null;
 }
 
 async function resolveStopId(strapi, stopParam) {
