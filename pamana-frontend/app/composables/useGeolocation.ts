@@ -64,17 +64,9 @@ export function useGeolocation() {
           })
         }
       },
-<<<<<<< HEAD
-      {
-        enableHighAccuracy: false,
-        maximumAge: 60000,
-        timeout: 8000
-      }
-=======
       // maximumAge: 0 forces a fresh fix on every request instead of reusing a
       // cached browser position - relevant while diagnosing accuracy issues.
       { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
->>>>>>> fe19b90e7ddd945536080c35c01f24fbb1de146b
     )
   }
 
