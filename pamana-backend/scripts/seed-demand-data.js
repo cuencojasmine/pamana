@@ -24,10 +24,16 @@ const { timeSlotForHour: timeSlotFor } = require('../src/services/pamana-ai/time
 const ROUTE_ID = 2; // San Luis - San Fernando (SL-SF-01)
 const SEED_DATES = ['2026-08-25', '2026-08-26', '2026-08-27'];
 
+// Real San Luis (~15.1667, 120.7333) to real San Fernando city proper
+// (~15.0285, 120.6898) - the pre-existing "San Luis Public Market" stop
+// was never actually placed in San Luis (it was at 15.02, 120.65, inside
+// San Fernando itself), which made the whole corridor render as a ~3km
+// cluster on the map instead of the real ~16km corridor. Fixed directly
+// in the DB for the existing stop; these 3 are placed along the real line.
 const NEW_STOPS = [
-  { name: 'Santo Tomas Stop', sequence: 2, latitude: 15.023, longitude: 120.660 },
-  { name: 'OGC Stop', sequence: 3, latitude: 15.026, longitude: 120.670 },
-  { name: 'SM City San Fernando', sequence: 4, latitude: 15.029, longitude: 120.688 },
+  { name: 'Santo Tomas Stop', sequence: 2, latitude: 15.1206, longitude: 120.7188 },
+  { name: 'OGC Stop', sequence: 3, latitude: 15.0746, longitude: 120.7043 },
+  { name: 'SM City San Fernando', sequence: 4, latitude: 15.0285, longitude: 120.6898 },
 ];
 
 // hour-of-day -> relative demand weight per stop (rough rush-hour curve, full 24h so the

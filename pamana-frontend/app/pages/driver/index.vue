@@ -9,7 +9,10 @@ useHead({
 
 const { apiFetch } = useApi()
 const { user } = useAuth()
+const toast = useToast()
 const online = ref(true)
+const startingTrip = ref(false)
+const startDirection = ref<'outbound' | 'inbound'>('outbound')
 
 const firstName = computed(() => user.value?.username?.split(/[._\s-]/)[0] || 'Driver')
 
@@ -66,6 +69,48 @@ async function loadActiveTrip() {
   }
 }
 
+async function startTrip() {
+  startingTrip.value = true
+
+  try {
+    const routesResponse = await apiFetch<{ data: { id: number }[] }>('/api/routes', {
+      query: { 'filters[route_code][$eq]': 'SL-SF-01' }
+    })
+
+    const route = routesResponse.data[0]
+
+    if (!route) {
+      toast.add({
+        title: 'Unable to start trip',
+        description: 'The pilot corridor route could not be found.',
+        color: 'error'
+      })
+      return
+    }
+
+    await apiFetch('/api/trips', {
+      method: 'POST',
+      body: { data: { route: route.id, direction: startDirection.value } }
+    })
+
+    toast.add({
+      title: 'Trip started',
+      description: 'Head to Current Trip to send GPS updates and manage occupancy.',
+      color: 'success'
+    })
+
+    await loadActiveTrip()
+  } catch (error: any) {
+    toast.add({
+      title: 'Unable to start trip',
+      description: error?.data?.error?.message || 'Please try again.',
+      color: 'error'
+    })
+  } finally {
+    startingTrip.value = false
+  }
+}
+
 onMounted(() => {
   loadActiveTrip()
 })
@@ -102,36 +147,83 @@ onMounted(() => {
           >{{ activeTrip ? 'Ongoing' : 'No active trip' }}</span>
         </div>
 
-        <div class="mt-4 grid items-center gap-4 text-sm sm:grid-cols-[1fr_auto_1fr_auto]">
-          <div>
-            <p class="text-[11px] text-neutral-400">From</p>
-            <p class="font-medium text-neutral-900">{{ tripOrigin }}</p>
+        <template v-if="activeTrip">
+          <div class="mt-4 grid items-center gap-4 text-sm sm:grid-cols-[1fr_auto_1fr_auto]">
+            <div>
+              <p class="text-[11px] text-neutral-400">From</p>
+              <p class="font-medium text-neutral-900">{{ tripOrigin }}</p>
+            </div>
+            <UIcon name="i-lucide-arrow-right" class="hidden size-4 text-neutral-300 sm:block" />
+            <div class="sm:text-right">
+              <p class="text-[11px] text-neutral-400">To</p>
+              <p class="font-medium text-neutral-900">{{ tripDestination }}</p>
+            </div>
+            <div class="border-neutral-900/10 sm:border-l sm:pl-4 sm:text-right">
+              <p class="text-[11px] text-neutral-400">ETA</p>
+              <p class="font-medium text-neutral-900">{{ tripEta }}</p>
+            </div>
           </div>
-          <UIcon name="i-lucide-arrow-right" class="hidden size-4 text-neutral-300 sm:block" />
-          <div class="sm:text-right">
-            <p class="text-[11px] text-neutral-400">To</p>
-            <p class="font-medium text-neutral-900">{{ tripDestination }}</p>
-          </div>
-          <div class="border-neutral-900/10 sm:border-l sm:pl-4 sm:text-right">
-            <p class="text-[11px] text-neutral-400">ETA</p>
-            <p class="font-medium text-neutral-900">{{ tripEta }}</p>
-          </div>
-        </div>
 
-        <div class="mt-5 grid grid-cols-3 gap-2">
-          <div class="rounded-xl bg-neutral-900/[0.035] px-3 py-2 text-center">
-            <p class="text-[10px] text-neutral-400">Passengers</p>
-            <p class="stat-num text-sm">{{ activeTrip ? occupancyCount : '—' }}</p>
+          <div class="mt-5 grid grid-cols-3 gap-2">
+            <div class="rounded-xl bg-neutral-900/[0.035] px-3 py-2 text-center">
+              <p class="text-[10px] text-neutral-400">Passengers</p>
+              <p class="stat-num text-sm">{{ occupancyCount }}</p>
+            </div>
+            <div class="rounded-xl bg-neutral-900/[0.035] px-3 py-2 text-center">
+              <p class="text-[10px] text-neutral-400">Trip time</p>
+              <p class="stat-num text-sm">{{ tripEta }}</p>
+            </div>
+            <div class="rounded-xl bg-lime-300/10 px-3 py-2 text-center">
+              <p class="text-[10px] text-neutral-400">Collected fare</p>
+              <p class="stat-num text-sm text-lime-700">₱420</p>
+            </div>
           </div>
-          <div class="rounded-xl bg-neutral-900/[0.035] px-3 py-2 text-center">
-            <p class="text-[10px] text-neutral-400">Trip time</p>
-            <p class="stat-num text-sm">{{ tripEta }}</p>
+
+          <NuxtLink
+            to="/driver/current-trip"
+            class="mt-4 flex items-center justify-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            <UIcon name="i-lucide-navigation" class="size-4" />
+            Go to Current Trip
+          </NuxtLink>
+        </template>
+
+        <template v-else>
+          <p class="mt-4 text-sm text-neutral-500">
+            No trip in progress. Pick a direction and start your shift on the San Luis ↔ City of San Fernando corridor.
+          </p>
+
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+              :class="startDirection === 'outbound' ? 'border-lime-500 bg-lime-100 text-lime-700' : 'border-neutral-900/10 text-neutral-500'"
+              @click="startDirection = 'outbound'"
+            >
+              Outbound · to San Fernando
+            </button>
+            <button
+              type="button"
+              class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+              :class="startDirection === 'inbound' ? 'border-lime-500 bg-lime-100 text-lime-700' : 'border-neutral-900/10 text-neutral-500'"
+              @click="startDirection = 'inbound'"
+            >
+              Inbound · to San Luis
+            </button>
           </div>
-          <div class="rounded-xl bg-lime-300/10 px-3 py-2 text-center">
-            <p class="text-[10px] text-neutral-400">Collected fare</p>
-            <p class="stat-num text-sm text-lime-700">₱420</p>
-          </div>
-        </div>
+
+          <UButton
+            block
+            size="lg"
+            icon="i-lucide-play"
+            class="mt-3 rounded-full font-semibold"
+            :loading="startingTrip"
+            :disabled="startingTrip"
+            @click="startTrip"
+          >
+            Start Trip
+          </UButton>
+        </template>
       </UCard>
 
       <UCard class="glass glow-lime rounded-30" :ui="{ root: 'ring-0 rounded-30', body: 'relative z-10' }">
